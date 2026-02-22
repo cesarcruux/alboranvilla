@@ -1,0 +1,38 @@
+{
+    "home": {
+        "hero": {
+            "headline": "Where the Mediterranean Meets the Indian Ocean",
+            "subheadline": "Private Villa in Gili Air",
+            "cta": "Inquire"
+        },
+        "story": {
+            "eyebrow": "Mediterranean Soul",
+            "title": "A Private Sanctuary Designed Around Light and Silence",
+            "paragraph1": "Alborán is rooted in Mediterranean architecture yet shaped by the tropical stillness of Gili Air. Stone textures, warm tones and open spaces create a natural rhythm between interior and exterior.",
+            "paragraph2": "It is not simply a place to stay — it is a space intentionally designed for calm, privacy and quiet refinement."
+        },
+        "highlights": [
+            {
+                "title": "Private",
+                "description": "A fully private residence with no shared spaces."
+            },
+            {
+                "title": "Pool",
+                "description": "Infinity pool designed for quiet, uninterrupted moments."
+            },
+            {
+                "title": "Architecture",
+                "description": "Mediterranean stone textures blended with tropical light."
+            },
+            {
+                "title": "Setting",
+                "description": "Secluded within the calm rhythm of Gili Air."
+            }
+        ],
+        "finalInvitation": {
+            "title": "A Stay Designed for Presence.",
+            "subtitle": "Alborán is created for those who value privacy, stillness and intentional design. If this resonates with you, your time here begins with a simple conversation.",
+            "cta": "Begin Your Stay"
+        }
+    }
+}
