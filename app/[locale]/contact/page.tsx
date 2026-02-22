@@ -1,5 +1,5 @@
 import { getDictionary } from "@/lib/i18n/getDictionary";
-
+import ContactForm from "./ContactForm";
 import type { Metadata } from "next";
 
 export async function generateMetadata({
@@ -51,56 +51,7 @@ export default async function ContactPage({
             <section className="pb-32 px-8">
                 <div className="max-w-3xl mx-auto">
 
-                    <form className="space-y-10">
-
-                        <div>
-                            <label className="block text-sm uppercase tracking-[0.3em] text-[#2f2f2f]/70 mb-4">
-                                Name
-                            </label>
-                            <input
-                                type="text"
-                                className="w-full border-b border-[#d6cfc7] bg-transparent py-3 focus:outline-none focus:border-[#2f2f2f]"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm uppercase tracking-[0.3em] text-[#2f2f2f]/70 mb-4">
-                                Email
-                            </label>
-                            <input
-                                type="email"
-                                className="w-full border-b border-[#d6cfc7] bg-transparent py-3 focus:outline-none focus:border-[#2f2f2f]"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm uppercase tracking-[0.3em] text-[#2f2f2f]/70 mb-4">
-                                Arrival – Departure
-                            </label>
-                            <input
-                                type="text"
-                                className="w-full border-b border-[#d6cfc7] bg-transparent py-3 focus:outline-none focus:border-[#2f2f2f]"
-                                placeholder="Preferred dates"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm uppercase tracking-[0.3em] text-[#2f2f2f]/70 mb-4">
-                                Message
-                            </label>
-                            <textarea
-                                rows={4}
-                                className="w-full border-b border-[#d6cfc7] bg-transparent py-3 focus:outline-none focus:border-[#2f2f2f]"
-                            />
-                        </div>
-
-                        <div className="pt-6">
-                            <button className="border border-[#2f2f2f]/60 text-[#2f2f2f] px-10 py-3 tracking-[0.25em] text-xs uppercase hover:bg-[#2f2f2f] hover:text-white transition-all duration-500">
-                                Send Inquiry
-                            </button>
-                        </div>
-
-                    </form>
+                    <ContactForm />
 
                 </div>
             </section>
