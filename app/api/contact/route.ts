@@ -86,7 +86,7 @@ ${getTimestamp()}
             <!-- Logo -->
             <div style="text-align: center; margin-bottom: 30px;">
               <img 
-                src="https://alboranvilla.com/logo-email.png"
+                src="https://www.alboranvilla.com/logo-email.png"
                 alt="Alborán Villa"
                 style="
                   max-width: 140px;
