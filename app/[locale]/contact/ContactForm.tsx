@@ -152,8 +152,8 @@ export default function ContactForm({ messages }: ContactFormProps) {
         const dayStart = start.getDate();
         const dayEnd = end.getDate();
 
-        const monthStart = start.toLocaleString("default", { month: "long" });
-        const monthEnd = end.toLocaleString("default", { month: "long" });
+        const monthStart = start.toLocaleString("en-GB", { month: "long" });
+        const monthEnd = end.toLocaleString("en-GB", { month: "long" });
 
         const year = end.getFullYear();
 

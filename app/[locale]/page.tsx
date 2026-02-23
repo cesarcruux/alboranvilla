@@ -2,6 +2,7 @@ import HeroCinematic from "../../components/sections/HeroCinematic";
 import { getDictionary } from "@/lib/i18n/getDictionary";
 import Storytelling from "../../components/sections/Storytelling";
 import VillaHighlights from "../../components/sections/VillaHighlights";
+import LocationAtmosphere from "../../components/sections/LocationAtmosphere";
 import FinalInvitation from "../../components/sections/FinalInvitation";
 
 export default async function Home({
@@ -29,6 +30,7 @@ export default async function Home({
             <VillaHighlights
                 highlights={dictionary.home.highlights}
             />
+            <LocationAtmosphere />
             <FinalInvitation
                 title={dictionary.home.finalInvitation.title}
                 subtitle={dictionary.home.finalInvitation.subtitle}

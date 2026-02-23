@@ -154,7 +154,92 @@ ${getTimestamp()}
 
           </div>
         </div>
+        
       `,
+        });
+        // -----------------------------
+        // Auto-reply to guest
+        // -----------------------------
+        await transporter.sendMail({
+            from: `"Alborán Villa" <${process.env.SMTP_USER}>`,
+            to: email,
+            subject: "Alborán Villa — We have received your enquiry",
+
+            text: `
+Dear ${name},
+
+Thank you for contacting Alborán Villa.
+
+We have received your enquiry for:
+
+${dates}
+
+Our team will review your request and get back to you shortly.
+
+Warm regards,
+Alborán Villa
+  `,
+
+            html: `
+    <div style="
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background-color: #f8f6f2;
+      padding: 40px 20px;
+    ">
+      <div style="
+        max-width: 600px;
+        margin: 0 auto;
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 6px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      ">
+
+        <div style="text-align: center; margin-bottom: 30px;">
+          <img 
+            src="https://www.alboranvilla.com/logo-email.png"
+            alt="Alborán Villa"
+            style="
+              max-width: 140px;
+              height: auto;
+              display: block;
+              margin: 0 auto;
+            "
+          />
+        </div>
+
+        <p style="margin-bottom: 20px; color: #444;">
+          Dear ${name},
+        </p>
+
+        <p style="margin-bottom: 20px; color: #444; line-height: 1.6;">
+          Thank you for contacting Alborán Villa.
+        </p>
+
+        <p style="margin-bottom: 20px; color: #444;">
+          We have received your enquiry for:
+        </p>
+
+        <p style="
+          margin-bottom: 25px;
+          font-weight: 500;
+          color: #2f2f2f;
+        ">
+          ${dates}
+        </p>
+
+        <p style="margin-bottom: 30px; color: #444; line-height: 1.6;">
+          Our team will carefully review your request and respond shortly.
+        </p>
+
+        <p style="color: #444;">
+          Warm regards,<br>
+          Alborán Villa
+        </p>
+
+      </div>
+    </div>
+  `,
         });
 
         return NextResponse.json({ success: true });
