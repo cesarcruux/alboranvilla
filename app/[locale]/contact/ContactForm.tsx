@@ -64,6 +64,7 @@ export default function ContactForm() {
                 <input
                     type="text"
                     name="name"
+                    required
                     value={formData.name}
                     onChange={handleChange}
                     className="w-full border-b border-[#d6cfc7] bg-transparent py-3 focus:outline-none focus:border-[#2f2f2f]"
@@ -77,6 +78,7 @@ export default function ContactForm() {
                 <input
                     type="email"
                     name="email"
+                    required
                     value={formData.email}
                     onChange={handleChange}
                     className="w-full border-b border-[#d6cfc7] bg-transparent py-3 focus:outline-none focus:border-[#2f2f2f]"
