@@ -34,5 +34,30 @@
             "subtitle": "Alborán is created for those who value privacy, stillness and intentional design. If this resonates with you, your time here begins with a simple conversation.",
             "cta": "Begin Your Stay"
         }
+    },
+    "contact": {
+        "hero": {
+            "eyebrow": "Contact",
+            "title": "Begin with a Conversation.",
+            "subtitle": "Each stay at Alborán is arranged personally. Share your dates and intentions, and we will respond thoughtfully."
+        },
+        "form": {
+            "labels": {
+                "name": "Name",
+                "email": "Email",
+                "dates": "Arrival – Departure",
+                "message": "Message"
+            },
+            "button": "Send Inquiry",
+            "status": {
+                "success": "Your inquiry has been sent.",
+                "error": "Something went wrong. Please try again.",
+                "sending": "Sending..."
+            },
+            "errors": {
+                "required": "Required field",
+                "invalidEmail": "Invalid email address"
+            }
+        }
     }
 }

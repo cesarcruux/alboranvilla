@@ -2,7 +2,28 @@
 
 import { useState } from "react";
 
-export default function ContactForm() {
+type ContactFormProps = {
+    messages: {
+        labels: {
+            name: string;
+            email: string;
+            dates: string;
+            message: string;
+        };
+        button: string;
+        status: {
+            success: string;
+            error: string;
+            sending: string;
+        };
+        errors: {
+            required: string;
+            invalidEmail: string;
+        };
+    };
+};
+
+export default function ContactForm({ messages }: ContactFormProps) {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -12,6 +33,12 @@ export default function ContactForm() {
 
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState<string | null>(null);
+
+    const [errors, setErrors] = useState<{
+        name?: string;
+        email?: string;
+        message?: string;
+    }>({});
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -26,6 +53,30 @@ export default function ContactForm() {
         e.preventDefault();
         setLoading(true);
         setStatus(null);
+
+        const newErrors: typeof errors = {};
+
+        if (!formData.name.trim()) {
+            newErrors.name = messages.errors.required;
+        }
+
+        if (!formData.email.trim()) {
+            newErrors.email = messages.errors.required;
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+            newErrors.email = messages.errors.invalidEmail;
+        }
+
+        if (!formData.message.trim()) {
+            newErrors.message = messages.errors.required;
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            setLoading(false);
+            return;
+        }
+
+        setErrors({});
 
         try {
             const res = await fetch("/api/contact", {
@@ -55,11 +106,11 @@ export default function ContactForm() {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-10">
+        <form onSubmit={handleSubmit} noValidate className="space-y-10">
 
             <div>
                 <label className="block text-sm uppercase tracking-[0.3em] text-[#2f2f2f]/70 mb-4">
-                    Name
+                    {messages.labels.name}
                 </label>
                 <input
                     type="text"
@@ -69,11 +120,14 @@ export default function ContactForm() {
                     onChange={handleChange}
                     className="w-full border-b border-[#d6cfc7] bg-transparent py-3 focus:outline-none focus:border-[#2f2f2f]"
                 />
+                {errors.name && (
+                    <p className="text-red-600 text-sm mt-2">{errors.name}</p>
+                )}
             </div>
 
             <div>
                 <label className="block text-sm uppercase tracking-[0.3em] text-[#2f2f2f]/70 mb-4">
-                    Email
+                    {messages.labels.email}
                 </label>
                 <input
                     type="email"
@@ -83,11 +137,16 @@ export default function ContactForm() {
                     onChange={handleChange}
                     className="w-full border-b border-[#d6cfc7] bg-transparent py-3 focus:outline-none focus:border-[#2f2f2f]"
                 />
+
+                {errors.email && (
+                    <p className="text-red-600 text-sm mt-2">{errors.email}</p>
+                )}
+
             </div>
 
             <div>
                 <label className="block text-sm uppercase tracking-[0.3em] text-[#2f2f2f]/70 mb-4">
-                    Arrival – Departure
+                    {messages.labels.dates}
                 </label>
                 <input
                     type="text"
@@ -101,7 +160,7 @@ export default function ContactForm() {
 
             <div>
                 <label className="block text-sm uppercase tracking-[0.3em] text-[#2f2f2f]/70 mb-4">
-                    Message
+                    {messages.labels.message}
                 </label>
                 <textarea
                     name="message"
@@ -110,6 +169,9 @@ export default function ContactForm() {
                     onChange={handleChange}
                     className="w-full border-b border-[#d6cfc7] bg-transparent py-3 focus:outline-none focus:border-[#2f2f2f]"
                 />
+                {errors.message && (
+                    <p className="text-red-600 text-sm mt-2">{errors.message}</p>
+                )}
             </div>
 
             <div className="pt-6">
@@ -118,18 +180,18 @@ export default function ContactForm() {
                     disabled={loading}
                     className="border border-[#2f2f2f]/60 text-[#2f2f2f] px-10 py-3 tracking-[0.25em] text-xs uppercase hover:bg-[#2f2f2f] hover:text-white transition-all duration-500"
                 >
-                    {loading ? "Sending..." : "Send Inquiry"}
+                    {loading ? messages.status.sending : messages.button}
                 </button>
 
                 {status === "success" && (
-                    <p className="text-green-600 mt-4">
-                        Your inquiry has been sent.
+                    <p className="text-[#A8C4A0] text-xs mt-4 tracking-[0.15em]">
+                        {messages.status.success}
                     </p>
                 )}
 
                 {status === "error" && (
-                    <p className="text-red-600 mt-4">
-                        Something went wrong. Please try again.
+                    <p className="text-[#8A8A8A] text-xs mt-4 tracking-[0.15em]">
+                        {messages.status.error}
                     </p>
                 )}
             </div>

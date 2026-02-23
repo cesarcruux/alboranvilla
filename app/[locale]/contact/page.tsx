@@ -32,16 +32,15 @@ export default async function ContactPage({
                 <div className="max-w-4xl mx-auto text-center">
 
                     <span className="text-xs uppercase tracking-[0.5em] text-[#A8C4A0] block mb-8">
-                        Contact
+                        {dictionary.contact.hero.eyebrow}
                     </span>
 
                     <h1 className="text-4xl md:text-6xl font-serif text-[#2f2f2f] leading-tight mb-10">
-                        Begin with a Conversation.
+                        {dictionary.contact.hero.title}
                     </h1>
 
                     <p className="text-lg text-[#4a4a4a] font-light leading-relaxed">
-                        Each stay at Alborán is arranged personally.
-                        Share your dates and intentions, and we will respond thoughtfully.
+                        {dictionary.contact.hero.subtitle}
                     </p>
 
                 </div>
@@ -51,7 +50,7 @@ export default async function ContactPage({
             <section className="pb-32 px-8">
                 <div className="max-w-3xl mx-auto">
 
-                    <ContactForm />
+                    <ContactForm messages={dictionary.contact.form} />
 
                 </div>
             </section>
