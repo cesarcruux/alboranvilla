@@ -1,36 +1,36 @@
 {
     "home": {
         "hero": {
-            "headline": "Where the Mediterranean Meets the Indian Ocean",
-            "subheadline": "Private Villa in Gili Air",
+            "headline": "A Private Mediterranean Villa in Gili Air",
+            "subheadline": "Where the Mediterranean Meets the Indian Ocean",
             "cta": "Inquire"
         },
         "story": {
             "eyebrow": "Mediterranean Soul",
-            "title": "A Private Sanctuary Designed Around Light and Silence",
+            "title": "A Private Villa Sanctuary in Gili Air, Indonesia",
             "paragraph1": "Alborán is rooted in Mediterranean architecture yet shaped by the tropical stillness of Gili Air. Stone textures, warm tones and open spaces create a natural rhythm between interior and exterior.",
             "paragraph2": "It is not simply a place to stay — it is a space intentionally designed for calm, privacy and quiet refinement."
         },
         "highlights": [
             {
-                "title": "Private",
-                "description": "A fully private residence with no shared spaces."
+                "title": "Fully Private Villa",
+                "description": "A fully private residence in Gili Air with no shared spaces."
             },
             {
-                "title": "Pool",
-                "description": "Infinity pool designed for quiet, uninterrupted moments."
+                "title": "Private Infinity Pool",
+                "description": "An infinity pool designed for quiet, uninterrupted moments."
             },
             {
-                "title": "Architecture",
+                "title": "Mediterranean Architecture",
                 "description": "Mediterranean stone textures blended with tropical light."
             },
             {
-                "title": "Setting",
-                "description": "Secluded within the calm rhythm of Gili Air."
+                "title": "Secluded Setting in Gili Air",
+                "description": "Positioned within the calm rhythm of Gili Air, Indonesia."
             }
         ],
         "finalInvitation": {
-            "title": "A Stay Designed for Presence.",
+            "title": "A Private Villa Stay in Gili Air",
             "subtitle": "Alborán is created for those who value privacy, stillness and intentional design. If this resonates with you, your time here begins with a simple conversation.",
             "cta": "Begin Your Stay"
         }
