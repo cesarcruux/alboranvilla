@@ -36,7 +36,7 @@ export default function LocaleLayout({
 
     const structuredData = {
         "@context": "https://schema.org",
-        "@type": "LodgingBusiness",
+        "@type": "VacationRental",
         name: "Alborán Villa",
         image: "https://www.alboranvilla.com/images/hero.webp",
         url: "https://www.alboranvilla.com",

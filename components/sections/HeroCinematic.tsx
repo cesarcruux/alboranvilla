@@ -1,5 +1,6 @@
 
 import Image from "next/image";
+import Link from "next/link";
 
 type HeroProps = {
     headline: string;
@@ -33,9 +34,12 @@ export default function HeroCinematic({
                     {subheadline}
                 </p>
 
-                <button className="border border-white/60 text-white px-10 py-3 tracking-[0.2em] text-xs uppercase hover:bg-white hover:text-black transition-all duration-500">
+                <Link
+                    href="/en/contact"
+                    className="border border-white/60 text-white px-10 py-3 tracking-[0.2em] text-xs uppercase hover:bg-white hover:text-black transition-all duration-500"
+                >
                     {cta}
-                </button>
+                </Link>
             </div>
         </section>
     );

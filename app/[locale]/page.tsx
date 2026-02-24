@@ -8,9 +8,9 @@ import FinalInvitation from "../../components/sections/FinalInvitation";
 export default async function Home({
     params,
 }: {
-    params: Promise<{ locale: "en" | "es" | "fr" | "de" }>;
+    params: { locale: "en" };
 }) {
-    const { locale } = await params;
+    const { locale } = params;
     const dictionary = await getDictionary(locale);
 
     return (
@@ -27,10 +27,13 @@ export default async function Home({
                 paragraph1={dictionary.home.story.paragraph1}
                 paragraph2={dictionary.home.story.paragraph2}
             />
+
             <VillaHighlights
                 highlights={dictionary.home.highlights}
             />
+
             <LocationAtmosphere />
+
             <FinalInvitation
                 title={dictionary.home.finalInvitation.title}
                 subtitle={dictionary.home.finalInvitation.subtitle}

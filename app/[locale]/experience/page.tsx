@@ -1,29 +1,20 @@
-import { getDictionary } from "@/lib/i18n/getDictionary";
-
+import Image from "next/image";
+import Link from "next/link";
 import type { Metadata } from "next";
 
-export async function generateMetadata({
-    params,
-}: {
-    params: Promise<{ locale: "en" | "es" | "fr" | "de" }>;
-}): Promise<Metadata> {
-
-    await params;
-
+export async function generateMetadata(): Promise<Metadata> {
     return {
         title: "The Experience – Alborán",
         description:
             "A slower rhythm of living in Gili Air. Mornings of light, afternoons of stillness and evenings of quiet return.",
     };
 }
-export default async function ExperiencePage({
+
+export default function ExperiencePage({
     params,
 }: {
-    params: Promise<{ locale: "en" | "es" | "fr" | "de" }>;
+    params: { locale: "en" };
 }) {
-    const { locale } = await params;
-    const dictionary = await getDictionary(locale);
-
     return (
         <main>
 
@@ -65,10 +56,12 @@ export default async function ExperiencePage({
                     </div>
 
                     <div className="relative h-[500px] overflow-hidden">
-                        <img
+                        <Image
                             src="/images/villa-detail-01.jpg"
-                            alt="Morning at Alborán"
-                            className="object-cover w-full h-full"
+                            alt="Morning light at Alborán Villa in Gili Air"
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 100vw, 50vw"
                         />
                     </div>
 
@@ -80,10 +73,12 @@ export default async function ExperiencePage({
                 <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-24 items-center">
 
                     <div className="relative h-[500px] overflow-hidden md:order-1">
-                        <img
+                        <Image
                             src="/images/villa-detail-01.jpg"
-                            alt="Afternoon at Alborán"
-                            className="object-cover w-full h-full"
+                            alt="Afternoon stillness at Alborán Villa"
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 100vw, 50vw"
                         />
                     </div>
 
@@ -119,12 +114,60 @@ export default async function ExperiencePage({
                     </div>
 
                     <div className="relative h-[500px] overflow-hidden">
-                        <img
+                        <Image
                             src="/images/villa-detail-01.jpg"
-                            alt="Evening at Alborán"
-                            className="object-cover w-full h-full"
+                            alt="Evening at Alborán Villa in Gili Air"
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 100vw, 50vw"
                         />
                     </div>
+
+                </div>
+            </section>
+
+            {/* RETURN TO VILLA (ARCHITECTURAL LINK) */}
+            <section className="py-32 px-8 bg-[#F8F4F0]">
+                <div className="max-w-3xl mx-auto text-center">
+
+                    <h2 className="text-3xl md:text-4xl font-serif text-[#2f2f2f] mb-8">
+                        Rooted in Architecture.
+                    </h2>
+
+                    <p className="text-lg text-[#4a4a4a] font-light leading-relaxed mb-12">
+                        Every experience begins with space. Discover the Mediterranean
+                        architecture that shapes each moment.
+                    </p>
+
+                    <Link
+                        href="/en/villa"
+                        className="text-sm uppercase tracking-[0.3em] text-[#A8C4A0] hover:opacity-70 transition-opacity"
+                    >
+                        Explore the Villa
+                    </Link>
+
+                </div>
+            </section>
+
+            {/* FINAL INVITATION */}
+            <section className="py-32 px-8">
+                <div className="max-w-3xl mx-auto text-center">
+
+                    <h2 className="text-3xl md:text-4xl font-serif text-[#2f2f2f] mb-8">
+                        Begin Your Stay.
+                    </h2>
+
+                    <p className="text-lg text-[#4a4a4a] font-light leading-relaxed mb-12">
+                        A private Mediterranean villa in Gili Air designed for stillness,
+                        proportion and quiet refinement.
+                    </p>
+
+                    <Link
+                        href="/en/contact"
+                        className="border border-[#2f2f2f]/60 text-[#2f2f2f] px-10 py-3 tracking-[0.25em] text-xs uppercase hover:bg-[#2f2f2f] hover:text-white transition-all duration-500"
+                    >
+                        Contact
+                    </Link>
 
                 </div>
             </section>
