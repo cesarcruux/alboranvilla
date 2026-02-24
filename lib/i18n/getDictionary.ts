@@ -1,4 +1,6 @@
-import type { Locale } from "./config";
+import { locales } from "./config";
+
+export type Locale = (typeof locales)[number];
 
 export type Dictionary = typeof import("./dictionaries/en.json");
 
