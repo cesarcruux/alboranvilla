@@ -16,7 +16,7 @@ export default function HeroCinematic({
     return (
         <section className="relative h-screen w-full overflow-hidden">
             <Image
-                src="/images/hero.jpg"
+                src="/images/hero.webp"
                 alt="Alborán Villa"
                 fill
                 priority
