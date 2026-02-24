@@ -27,13 +27,13 @@ export async function generateMetadata(): Promise<Metadata> {
         },
     };
 }
-import { locales } from "@/lib/i18n/config";
-
+import { defaultLocale } from "@/lib/i18n/config";
 export async function generateStaticParams() {
-    return locales.map((locale) => ({
-        locale,
-    }));
+    return [
+        { locale: defaultLocale }
+    ];
 }
+
 export default function LocaleLayout({
     children,
 }: {
