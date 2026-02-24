@@ -45,7 +45,7 @@ export default function LocaleLayout({
         priceRange: "$$$",
         address: {
             "@type": "PostalAddress",
-            addressLocality: "Gili Indah",
+            addressLocality: "Gili Air",
             addressRegion: "West Nusa Tenggara",
             postalCode: "83352",
             addressCountry: "ID",
