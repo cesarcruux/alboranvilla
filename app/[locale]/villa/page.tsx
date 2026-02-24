@@ -75,10 +75,9 @@ export default async function VillaPage({
                         </span>
 
                         <h1 className="text-4xl md:text-6xl font-serif text-[#2f2f2f] leading-tight mb-10">
-                            A Private Mediterranean Villa
+                            A Private Architectural Retreat
                             <br /> in Gili Air, Indonesia.
                         </h1>
-
                         <p className="text-lg text-[#4a4a4a] font-light leading-relaxed max-w-md">
                             Mediterranean proportion meets tropical stillness —
                             creating a space where interior and exterior dissolve
