@@ -1,5 +1,3 @@
-import { getDictionary } from "@/lib/i18n/getDictionary";
-
 import type { Metadata } from "next";
 
 export async function generateMetadata({
@@ -37,9 +35,13 @@ export async function generateMetadata({
         description: meta.description,
     };
 }
-const posts: Record<string, { title: string; content: string }> = {
+
+const posts: Record<string, { title: string; content: string; description: string; date: string }> = {
     "slow-mornings": {
         title: "The Art of Slow Mornings",
+        description:
+            "Why architecture shapes rhythm and presence in the quiet mornings of Gili Air.",
+        date: "2026-03-01",
         content: `
       At Alborán, mornings are not rushed.
       Light moves slowly across stone walls.
@@ -53,6 +55,9 @@ const posts: Record<string, { title: string; content: string }> = {
     },
     "stone-and-light": {
         title: "Stone and Light",
+        description:
+            "Mediterranean proportion translated into tropical stillness at Alborán Villa.",
+        date: "2026-02-01",
         content: `
       Mediterranean architecture relies on proportion and material.
       In Gili Air, those proportions meet tropical light.
@@ -67,10 +72,9 @@ const posts: Record<string, { title: string; content: string }> = {
 export default async function JournalPostPage({
     params,
 }: {
-    params: Promise<{ locale: "en" | "es" | "fr" | "de"; slug: string }>;
+    params: Promise<{ locale: "en"; slug: string }>;
 }) {
-    const { locale, slug } = await params;
-    const dictionary = await getDictionary(locale);
+    const { slug } = await params;
 
     const post = posts[slug];
 
@@ -84,8 +88,45 @@ export default async function JournalPostPage({
         );
     }
 
+    const articleStructuredData = {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "@id": `https://www.alboranvilla.com/journal/${slug}#article`,
+        headline: post.title,
+        description: post.description,
+        datePublished: post.date,
+        author: {
+            "@type": "Organization",
+            name: "Alborán Villa",
+        },
+        publisher: {
+            "@type": "Organization",
+            name: "Alborán Villa",
+            logo: {
+                "@type": "ImageObject",
+                url: "https://www.alboranvilla.com/images/hero.webp",
+            },
+        },
+        isPartOf: {
+            "@type": "Blog",
+            "@id": "https://www.alboranvilla.com/journal#blog",
+        },
+        about: {
+            "@type": "LodgingBusiness",
+            "@id": "https://www.alboranvilla.com/#business",
+            name: "Alborán Villa",
+        },
+    };
+
     return (
         <main className="pt-24 bg-[#F8F4F0]">
+
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(articleStructuredData),
+                }}
+            />
 
             <section className="py-40 px-8">
                 <div className="max-w-3xl mx-auto">
