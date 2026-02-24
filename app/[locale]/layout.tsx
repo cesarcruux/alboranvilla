@@ -38,6 +38,8 @@ export default function LocaleLayout({
         "@type": "LodgingBusiness",
         "@id": "https://www.alboranvilla.com/#business",
         name: "Alborán Villa",
+        description:
+            "Alborán Villa is a private architectural retreat in Gili Air, Indonesia, offering Mediterranean-inspired residences designed for silence, proportion and tropical stillness.",
         url: "https://www.alboranvilla.com",
         image: "https://www.alboranvilla.com/images/hero.webp",
         telephone: "+6281215614589",
