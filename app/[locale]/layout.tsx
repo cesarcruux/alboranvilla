@@ -57,6 +57,14 @@ export default function LocaleLayout({
             latitude: -8.35242725536122,
             longitude: 116.0825369305399,
         },
+        containedInPlace: {
+            "@type": "AdministrativeArea",
+            name: "West Nusa Tenggara",
+            containedInPlace: {
+                "@type": "Country",
+                name: "Indonesia"
+            }
+        },
         aggregateRating: {
             "@type": "AggregateRating",
             ratingValue: "5",
