@@ -42,10 +42,12 @@ export default function LocaleLayout({
         url: "https://www.alboranvilla.com",
         telephone: "+6281215614589",
         email: "info@alboranvilla.com",
+        priceRange: "$$$",
         address: {
             "@type": "PostalAddress",
             addressLocality: "Gili Indah",
             addressRegion: "West Nusa Tenggara",
+            postalCode: "83352",
             addressCountry: "ID",
             streetAddress:
                 "Gili Indah, Pemenang, North Lombok Regency, West Nusa Tenggara, Indonesia",
