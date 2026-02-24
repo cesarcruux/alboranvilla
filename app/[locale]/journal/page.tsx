@@ -12,6 +12,13 @@ export default function JournalPage() {
 
     const posts = [
         {
+            slug: "no-motorised-traffic",
+            title: "Why the Absence of Motorised Traffic Changes the Experience of Place",
+            excerpt:
+                "How the absence of engines in Gili Air transforms rhythm, perception and the architecture of retreat.",
+            date: "April 2026",
+        },
+        {
             slug: "slow-mornings",
             title: "The Art of Slow Mornings",
             excerpt:
@@ -51,7 +58,6 @@ export default function JournalPage() {
                 }}
             />
 
-            {/* HERO */}
             <section className="py-40 px-8 text-center">
                 <div className="max-w-4xl mx-auto">
 
@@ -66,7 +72,6 @@ export default function JournalPage() {
                 </div>
             </section>
 
-            {/* POSTS */}
             <section className="pb-40 px-8">
                 <div className="max-w-5xl mx-auto space-y-24">
 
