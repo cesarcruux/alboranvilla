@@ -1,28 +1,14 @@
-import { getDictionary } from "@/lib/i18n/getDictionary";
-
 import type { Metadata } from "next";
 
-export async function generateMetadata({
-    params,
-}: {
-    params: Promise<{ locale: "en" | "es" | "fr" | "de" }>;
-}): Promise<Metadata> {
-
-    await params;
-
+export async function generateMetadata(): Promise<Metadata> {
     return {
         title: "Journal – Alborán",
         description:
             "Notes on architecture, stillness and island life at Alborán Villa in Gili Air.",
     };
 }
-export default async function JournalPage({
-    params,
-}: {
-    params: Promise<{ locale: "en" | "es" | "fr" | "de" }>;
-}) {
-    const { locale } = await params;
-    const dictionary = await getDictionary(locale);
+
+export default function JournalPage() {
 
     const posts = [
         {
@@ -41,8 +27,29 @@ export default async function JournalPage({
         },
     ];
 
+    const blogStructuredData = {
+        "@context": "https://schema.org",
+        "@type": "Blog",
+        "@id": "https://www.alboranvilla.com/journal#blog",
+        name: "Alborán Journal",
+        description:
+            "Editorial notes on architecture, stillness and island life at Alborán Villa in Gili Air.",
+        isPartOf: {
+            "@type": "LodgingBusiness",
+            "@id": "https://www.alboranvilla.com/#business",
+            name: "Alborán Villa",
+        },
+    };
+
     return (
         <main>
+
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(blogStructuredData),
+                }}
+            />
 
             {/* HERO */}
             <section className="py-40 px-8 text-center">
@@ -79,7 +86,7 @@ export default async function JournalPage({
                             </p>
 
                             <a
-                                href={`/${locale}/journal/${post.slug}`}
+                                href={`/en/journal/${post.slug}`}
                                 className="text-sm uppercase tracking-[0.3em] text-[#2f2f2f] hover:text-[#A8C4A0] transition-colors"
                             >
                                 Read Article →
