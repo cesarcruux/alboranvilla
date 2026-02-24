@@ -8,10 +8,10 @@ import FinalInvitation from "../../components/sections/FinalInvitation";
 export default async function Home({
     params,
 }: {
-    params: { locale: "en" };
+    params: Promise<{ locale: string }>;
 }) {
-    const { locale } = params;
-    const dictionary = await getDictionary(locale);
+    const { locale } = await params;
+    const dictionary = await getDictionary(locale as any);
 
     return (
         <main>
@@ -34,11 +34,11 @@ export default async function Home({
 
             <LocationAtmosphere />
 
-            {/* ENTITY CONSOLIDATION BLOCK */}
             <section className="max-w-3xl mx-auto px-8 py-24 text-center">
                 <h2 className="text-2xl md:text-3xl font-serif text-[#2f2f2f] mb-6">
                     A Private Architectural Retreat in Gili Air
                 </h2>
+
                 <p className="text-base text-[#4a4a4a] font-light leading-relaxed">
                     Alborán Villa is a private Mediterranean-inspired villa project
                     located in Gili Air, Indonesia. Designed around architectural
