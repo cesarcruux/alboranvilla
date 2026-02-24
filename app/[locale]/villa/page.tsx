@@ -17,8 +17,53 @@ export default async function VillaPage({
 }) {
     const { locale } = params;
     await getDictionary(locale);
+
+    const villaStructuredData = {
+        "@context": "https://schema.org",
+        "@type": "Accommodation",
+        "@id": "https://www.alboranvilla.com/villa#residence",
+        name: "Alborán Villa – Residence I",
+        description:
+            "A private Mediterranean villa in Gili Air, Indonesia, designed around light, proportion and quiet refinement.",
+        occupancy: {
+            "@type": "QuantitativeValue",
+            minValue: 2,
+            maxValue: 3,
+        },
+        numberOfRooms: 1,
+        amenityFeature: [
+            {
+                "@type": "LocationFeatureSpecification",
+                name: "Private Pool",
+                value: true,
+            },
+            {
+                "@type": "LocationFeatureSpecification",
+                name: "Extra Bed Available",
+                value: true,
+            },
+            {
+                "@type": "LocationFeatureSpecification",
+                name: "Baby Crib Available",
+                value: true,
+            },
+        ],
+        isPartOf: {
+            "@type": "LodgingBusiness",
+            "@id": "https://www.alboranvilla.com/#business",
+            name: "Alborán Villa",
+        },
+    };
+
     return (
         <main>
+
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(villaStructuredData),
+                }}
+            />
 
             {/* HERO */}
             <section className="pt-40 pb-20 px-8">
@@ -93,7 +138,6 @@ export default async function VillaPage({
 
                     </div>
 
-                    {/* INTERNAL LINK TO EXPERIENCE */}
                     <div className="text-center">
                         <Link
                             href="/en/experience"
