@@ -124,7 +124,22 @@ export default function ExperiencePage({
 
                 </div>
             </section>
+            <section className="py-24 px-8">
+                <div className="max-w-3xl mx-auto text-center">
 
+                    <h2 className="text-2xl md:text-3xl font-serif text-[#2f2f2f] mb-8">
+                        A Retreat Shaped by the Island
+                    </h2>
+
+                    <p className="text-lg text-[#4a4a4a] font-light leading-relaxed">
+                        Gili Air’s absence of motorised traffic, its walkable scale and its
+                        proximity to the sea create the conditions for genuine retreat.
+                        Here, architecture does not isolate — it amplifies the natural rhythm
+                        of the island itself.
+                    </p>
+
+                </div>
+            </section>
             {/* RETURN TO VILLA (ARCHITECTURAL LINK) */}
             <section className="py-32 px-8 bg-[#F8F4F0]">
                 <div className="max-w-3xl mx-auto text-center">
