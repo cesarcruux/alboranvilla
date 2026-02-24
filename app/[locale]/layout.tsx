@@ -36,7 +36,7 @@ export default function LocaleLayout({
 
     const structuredData = {
         "@context": "https://schema.org",
-        "@type": "VacationRental",
+        "@type": "LodgingBusiness",
         name: "Alborán Villa",
         image: "https://www.alboranvilla.com/images/hero.webp",
         url: "https://www.alboranvilla.com",
@@ -57,6 +57,7 @@ export default function LocaleLayout({
             latitude: -8.35242725536122,
             longitude: 116.0825369305399,
         },
+
         containedInPlace: {
             "@type": "AdministrativeArea",
             name: "West Nusa Tenggara",
@@ -65,6 +66,7 @@ export default function LocaleLayout({
                 name: "Indonesia"
             }
         },
+
         aggregateRating: {
             "@type": "AggregateRating",
             ratingValue: "5",
