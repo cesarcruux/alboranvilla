@@ -27,9 +27,8 @@ export default function ExperiencePage({
                     </span>
 
                     <h1 className="text-4xl md:text-6xl font-serif text-[#2f2f2f] leading-tight mb-10">
-                        Life at a Slower Rhythm.
+                        The Rhythm of a Private Retreat.
                     </h1>
-
                     <p className="text-lg text-[#4a4a4a] font-light leading-relaxed max-w-2xl">
                         Days unfold gently in Gili Air. Mornings begin with soft light,
                         afternoons dissolve into stillness, and evenings return to quiet reflection.
