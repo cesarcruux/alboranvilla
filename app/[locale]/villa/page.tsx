@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getDictionary } from "@/lib/i18n/getDictionary";
+import type { Locale } from "@/lib/i18n/config";
 
 export async function generateMetadata() {
     return {
@@ -13,15 +14,16 @@ export async function generateMetadata() {
 export default async function VillaPage({
     params,
 }: {
-    params: { locale: "en" };
+    params: Promise<{ locale: Locale }>;
 }) {
-    const { locale } = params;
+    const { locale } = await params;
+
     await getDictionary(locale);
 
     const villaStructuredData = {
         "@context": "https://schema.org",
         "@type": "Accommodation",
-        "@id": "https://www.alboranvilla.com/villa#residence",
+        "@id": `https://www.alboranvilla.com/${locale}/villa#residence`,
         name: "Alborán Villa – Residence I",
         description:
             "A private Mediterranean villa in Gili Air, Indonesia, designed around light, proportion and quiet refinement.",
@@ -57,7 +59,6 @@ export default async function VillaPage({
 
     return (
         <main>
-
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{
@@ -78,6 +79,7 @@ export default async function VillaPage({
                             A Private Architectural Retreat
                             <br /> in Gili Air, Indonesia.
                         </h1>
+
                         <p className="text-lg text-[#4a4a4a] font-light leading-relaxed max-w-md">
                             Mediterranean proportion meets tropical stillness —
                             creating a space where interior and exterior dissolve
@@ -94,58 +96,44 @@ export default async function VillaPage({
                             sizes="(max-width: 768px) 100vw, 50vw"
                         />
                     </div>
-
                 </div>
             </section>
 
-            {/* CONTEMPLATIVE DETAIL */}
-            <section className="py-40 px-8">
-                <div className="max-w-3xl mx-auto">
-                    <div className="relative h-[500px] overflow-hidden">
-                        <Image
-                            src="/images/hero.webp"
-                            alt="Private Mediterranean villa detail in Gili Air"
-                            fill
-                            className="object-cover scale-105 transition-transform duration-1000"
-                            sizes="100vw"
-                        />
+            {/* INFO STRIP */}
+            <section className="py-16 px-8 border-t border-[#e4ddd4] border-b border-[#e4ddd4]">
+                <div className="max-w-5xl mx-auto text-center">
+                    <div className="text-sm uppercase tracking-[0.35em] text-[#2f2f2f]/70 space-x-6">
+                        <span>1 Bedroom</span>
+                        <span>·</span>
+                        <span>2–3 Guests</span>
+                        <span>·</span>
+                        <span>Private Pool</span>
+                        <span>·</span>
+                        <span>Gili Air, Indonesia</span>
                     </div>
                 </div>
             </section>
 
             {/* SPATIAL PHILOSOPHY */}
             <section className="py-32 px-8">
-                <div className="max-w-6xl mx-auto">
+                <div className="max-w-6xl mx-auto text-center">
 
-                    <h2 className="text-3xl md:text-4xl font-serif text-[#2f2f2f] mb-16 text-center">
+                    <h2 className="text-3xl md:text-4xl font-serif text-[#2f2f2f] mb-16">
                         Spatial Philosophy
                     </h2>
 
-                    <div className="grid md:grid-cols-2 gap-20 mb-16">
+                    <p className="text-lg text-[#4a4a4a] font-light leading-relaxed max-w-3xl mx-auto mb-12">
+                        The villa is designed around transition — from light to shadow,
+                        from interior to exterior, from stillness to openness.
+                        Each space unfolds gradually, encouraging presence rather than movement.
+                    </p>
 
-                        <p className="text-lg text-[#4a4a4a] font-light leading-relaxed">
-                            The villa is designed around transition — from light to shadow,
-                            from interior to exterior, from stillness to openness.
-                            Each space unfolds gradually, encouraging presence rather than movement.
-                        </p>
-
-                        <p className="text-lg text-[#4a4a4a] font-light leading-relaxed">
-                            There are no abrupt separations. Stone textures, open thresholds
-                            and proportioned volumes create a continuous architectural rhythm —
-                            where privacy feels natural rather than imposed.
-                        </p>
-
-                    </div>
-
-                    <div className="text-center">
-                        <Link
-                            href="/en/experience"
-                            className="text-sm uppercase tracking-[0.3em] text-[#A8C4A0] hover:opacity-70 transition-opacity"
-                        >
-                            Discover the Experience
-                        </Link>
-                    </div>
-
+                    <Link
+                        href={`/${locale}/experience`}
+                        className="text-sm uppercase tracking-[0.3em] text-[#A8C4A0] hover:opacity-70 transition-opacity"
+                    >
+                        Discover the Experience
+                    </Link>
                 </div>
             </section>
 
@@ -163,12 +151,11 @@ export default async function VillaPage({
                     </p>
 
                     <Link
-                        href="/en/contact"
+                        href={`/${locale}/contact`}
                         className="border border-[#2f2f2f]/60 text-[#2f2f2f] px-10 py-3 tracking-[0.25em] text-xs uppercase hover:bg-[#2f2f2f] hover:text-white transition-all duration-500"
                     >
                         Begin Your Stay
                     </Link>
-
                 </div>
             </section>
 

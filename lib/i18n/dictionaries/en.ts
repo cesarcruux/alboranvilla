@@ -1,0 +1,73 @@
+const en = {
+    home: {
+        hero: {
+            headline: "A Private Mediterranean Villa in Gili Air",
+            subheadline: "Where the Mediterranean Meets the Indian Ocean",
+            cta: "Inquire",
+        },
+        story: {
+            eyebrow: "Mediterranean Soul",
+            title: "A Private Villa Sanctuary in Gili Air, Indonesia",
+            paragraph1:
+                "Alborán is rooted in Mediterranean architecture yet shaped by the tropical stillness of Gili Air. Stone textures, warm tones and open spaces create a natural rhythm between interior and exterior.",
+            paragraph2:
+                "It is not simply a place to stay — it is a space intentionally designed for calm, privacy and quiet refinement.",
+        },
+        highlights: [
+            {
+                title: "Fully Private Villa",
+                description:
+                    "A fully private residence in Gili Air with no shared spaces.",
+            },
+            {
+                title: "Private Infinity Pool",
+                description:
+                    "An infinity pool designed for quiet, uninterrupted moments.",
+            },
+            {
+                title: "Mediterranean Architecture",
+                description:
+                    "Mediterranean stone textures blended with tropical light.",
+            },
+            {
+                title: "Secluded Setting in Gili Air",
+                description:
+                    "Positioned within the calm rhythm of Gili Air, Indonesia.",
+            },
+        ],
+        finalInvitation: {
+            title: "A Private Villa Stay in Gili Air",
+            subtitle:
+                "Alborán is created for those who value privacy, stillness and intentional design. If this resonates with you, your time here begins with a simple conversation.",
+            cta: "Begin Your Stay",
+        },
+    },
+    contact: {
+        hero: {
+            eyebrow: "Contact",
+            title: "Begin with a Conversation.",
+            subtitle:
+                "Each stay at Alborán is arranged personally. Share your dates and intentions, and we will respond thoughtfully.",
+        },
+        form: {
+            labels: {
+                name: "Name",
+                email: "Email",
+                dates: "Arrival – Departure",
+                message: "Message",
+            },
+            button: "Send Inquiry",
+            status: {
+                success: "Your inquiry has been sent.",
+                error: "Something went wrong. Please try again.",
+                sending: "Sending...",
+            },
+            errors: {
+                required: "Required field",
+                invalidEmail: "Invalid email address",
+            },
+        },
+    },
+};
+
+export default en;

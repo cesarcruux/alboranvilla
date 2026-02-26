@@ -2,6 +2,11 @@ import HeaderMinimal from "@/components/ui/HeaderMinimal";
 import FooterElegant from "@/components/ui/FooterElegant";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import type { Metadata } from "next";
+import { defaultLocale } from "@/lib/i18n/config";
+
+type Params = Promise<{
+    locale: string;
+}>;
 
 export async function generateMetadata(): Promise<Metadata> {
     return {
@@ -10,7 +15,8 @@ export async function generateMetadata(): Promise<Metadata> {
         description:
             "Alborán Villa is a private Mediterranean-inspired villa project in Gili Air, Indonesia, offering secluded architectural residences with private pools.",
         openGraph: {
-            title: "Alborán Villa – Private Mediterranean Villas in Gili Air",
+            title:
+                "Alborán Villa – Private Mediterranean Villas in Gili Air",
             description:
                 "A private Mediterranean-inspired villa project in Gili Air, Indonesia, designed for architectural silence and tropical stillness.",
             url: "https://www.alboranvilla.com",
@@ -27,18 +33,20 @@ export async function generateMetadata(): Promise<Metadata> {
         },
     };
 }
-import { defaultLocale } from "@/lib/i18n/config";
+
 export async function generateStaticParams() {
-    return [
-        { locale: defaultLocale }
-    ];
+    return [{ locale: defaultLocale }];
 }
 
-export default function LocaleLayout({
+export default async function LocaleLayout({
     children,
+    params,
 }: {
     children: React.ReactNode;
+    params: Params;
 }) {
+    const { locale } = await params;
+
     const structuredData = {
         "@context": "https://schema.org",
         "@type": "LodgingBusiness",
@@ -46,69 +54,11 @@ export default function LocaleLayout({
         name: "Alborán Villa",
         description:
             "Alborán Villa is a private architectural retreat in Gili Air, Indonesia, offering Mediterranean-inspired residences designed for silence, proportion and tropical stillness.",
-        url: "https://www.alboranvilla.com",
+        url: `https://www.alboranvilla.com/${locale}`,
         image: "https://www.alboranvilla.com/images/hero.webp",
         telephone: "+6281215614589",
         email: "info@alboranvilla.com",
         priceRange: "$$$",
-
-        address: {
-            "@type": "PostalAddress",
-            streetAddress:
-                "Gili Indah, Pemenang, North Lombok Regency",
-            addressLocality: "Gili Air",
-            addressRegion: "West Nusa Tenggara",
-            postalCode: "83352",
-            addressCountry: "ID",
-        },
-
-        geo: {
-            "@type": "GeoCoordinates",
-            latitude: -8.35242725536122,
-            longitude: 116.0825369305399,
-        },
-
-        containedInPlace: {
-            "@type": "AdministrativeArea",
-            name: "West Nusa Tenggara",
-            containedInPlace: {
-                "@type": "Country",
-                name: "Indonesia",
-            },
-        },
-
-        hasAccommodation: [
-            {
-                "@type": "Accommodation",
-                name: "Alborán Villa – Residence I",
-                occupancy: {
-                    "@type": "QuantitativeValue",
-                    maxValue: 4,
-                },
-                amenityFeature: [
-                    {
-                        "@type": "LocationFeatureSpecification",
-                        name: "Private Pool",
-                        value: true,
-                    },
-                    {
-                        "@type": "LocationFeatureSpecification",
-                        name: "Mediterranean Architecture",
-                        value: true,
-                    },
-                ],
-            },
-        ],
-
-        aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: "5",
-            reviewCount: "5",
-        },
-
-        sameAs: [
-            "https://www.google.com/maps/place/Albor%C3%A1n+Villa/",
-        ],
     };
 
     return (
@@ -121,7 +71,7 @@ export default function LocaleLayout({
             />
             <HeaderMinimal />
             <main className="pt-32">{children}</main>
-            <FooterElegant />
+            <FooterElegant locale={locale} />
             <WhatsAppButton />
         </>
     );

@@ -10,11 +10,13 @@ export async function generateMetadata(): Promise<Metadata> {
     };
 }
 
-export default function ExperiencePage({
+export default async function ExperiencePage({
     params,
 }: {
-    params: { locale: "en" };
+    params: Promise<{ locale: string }>;
 }) {
+    const { locale } = await params;
+
     return (
         <main>
 
@@ -29,6 +31,7 @@ export default function ExperiencePage({
                     <h1 className="text-4xl md:text-6xl font-serif text-[#2f2f2f] leading-tight mb-10">
                         The Rhythm of a Private Retreat.
                     </h1>
+
                     <p className="text-lg text-[#4a4a4a] font-light leading-relaxed max-w-2xl">
                         Days unfold gently in Gili Air. Mornings begin with soft light,
                         afternoons dissolve into stillness, and evenings return to quiet reflection.
@@ -74,7 +77,7 @@ export default function ExperiencePage({
                     <div className="relative h-[500px] overflow-hidden md:order-1">
                         <Image
                             src="/images/villa-detail-01.jpg"
-                            alt="Afternoon stillness at Alborán Villa"
+                            alt="Afternoon stillness at Alborán Villa in Gili Air"
                             fill
                             className="object-cover"
                             sizes="(max-width: 768px) 100vw, 50vw"
@@ -87,7 +90,7 @@ export default function ExperiencePage({
                         </h2>
 
                         <p className="text-lg text-[#4a4a4a] font-light leading-relaxed">
-                            As the sun rises higher, time slows. The pool reflects the sky,
+                            As the sun rises higher, time slows. The private pool reflects the sky,
                             air moves gently through open thresholds, and silence becomes tangible.
                             Nothing demands attention.
                         </p>
@@ -124,6 +127,8 @@ export default function ExperiencePage({
 
                 </div>
             </section>
+
+            {/* ISLAND CONTEXT */}
             <section className="py-24 px-8">
                 <div className="max-w-3xl mx-auto text-center">
 
@@ -140,7 +145,8 @@ export default function ExperiencePage({
 
                 </div>
             </section>
-            {/* RETURN TO VILLA (ARCHITECTURAL LINK) */}
+
+            {/* RETURN TO VILLA */}
             <section className="py-32 px-8 bg-[#F8F4F0]">
                 <div className="max-w-3xl mx-auto text-center">
 
@@ -154,7 +160,7 @@ export default function ExperiencePage({
                     </p>
 
                     <Link
-                        href="/en/villa"
+                        href={`/${locale}/villa`}
                         className="text-sm uppercase tracking-[0.3em] text-[#A8C4A0] hover:opacity-70 transition-opacity"
                     >
                         Explore the Villa
@@ -177,7 +183,7 @@ export default function ExperiencePage({
                     </p>
 
                     <Link
-                        href="/en/contact"
+                        href={`/${locale}/contact`}
                         className="border border-[#2f2f2f]/60 text-[#2f2f2f] px-10 py-3 tracking-[0.25em] text-xs uppercase hover:bg-[#2f2f2f] hover:text-white transition-all duration-500"
                     >
                         Contact

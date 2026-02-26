@@ -1,11 +1,12 @@
 import { getDictionary } from "@/lib/i18n/getDictionary";
 import ContactForm from "./ContactForm";
 import type { Metadata } from "next";
+import type { Locale } from "@/lib/i18n/config";
 
 export async function generateMetadata({
     params,
 }: {
-    params: Promise<{ locale: "en" | "es" | "fr" | "de" }>;
+    params: Promise<{ locale: Locale }>;
 }): Promise<Metadata> {
 
     await params;
@@ -16,10 +17,11 @@ export async function generateMetadata({
             "Begin with a conversation. Arrange your private stay at Alborán Villa in Gili Air.",
     };
 }
+
 export default async function ContactPage({
     params,
 }: {
-    params: Promise<{ locale: "en" | "es" | "fr" | "de" }>;
+    params: Promise<{ locale: Locale }>;
 }) {
     const { locale } = await params;
     const dictionary = await getDictionary(locale);
@@ -49,9 +51,7 @@ export default async function ContactPage({
             {/* FORM SECTION */}
             <section className="pb-32 px-8">
                 <div className="max-w-3xl mx-auto">
-
                     <ContactForm messages={dictionary.contact.form} />
-
                 </div>
             </section>
 

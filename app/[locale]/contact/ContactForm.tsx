@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type ContactFormProps = {
     messages: {
@@ -23,10 +23,14 @@ type ContactFormProps = {
     };
 };
 
+function formatKey(date: Date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+}
+
 export default function ContactForm({ messages }: ContactFormProps) {
-    // -----------------------------
-    // STATE
-    // -----------------------------
 
     const [formData, setFormData] = useState({
         name: "",
@@ -37,43 +41,46 @@ export default function ContactForm({ messages }: ContactFormProps) {
 
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState<"success" | "error" | null>(null);
-
-    const [errors, setErrors] = useState<{
-        name?: string;
-        email?: string;
-        message?: string;
-    }>({});
+    const [errors, setErrors] = useState<{ name?: string; email?: string; message?: string }>({});
 
     const [showCalendar, setShowCalendar] = useState(false);
     const [currentMonth, setCurrentMonth] = useState(new Date());
+
     const [checkIn, setCheckIn] = useState<Date | null>(null);
     const [checkOut, setCheckOut] = useState<Date | null>(null);
-    // -----------------------------
-    // HANDLERS
-    // -----------------------------
 
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) => {
-        setFormData((prev) => ({
-            ...prev,
-            [e.target.name]: e.target.value,
-        }));
-    };
+    const [occupiedNights, setOccupiedNights] = useState<Set<string>>(new Set());
 
-    const handleDateClick = () => {
-        setShowCalendar((prev) => !prev);
+    // ---------------------------
+    // FETCH AVAILABILITY
+    // ---------------------------
+
+    useEffect(() => {
+        async function load() {
+            try {
+                const res = await fetch("/api/availability");
+                const data = await res.json();
+                setOccupiedNights(new Set(data.occupiedNights || []));
+            } catch {
+                console.error("Availability load failed");
+            }
+        }
+        load();
+    }, []);
+
+    // ---------------------------
+    // FORM HANDLERS
+    // ---------------------------
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        setLoading(true);
-        setStatus(null);
-
         const newErrors: typeof errors = {};
 
-        // Validation
         if (!formData.name.trim()) {
             newErrors.name = messages.errors.required;
         }
@@ -90,31 +97,24 @@ export default function ContactForm({ messages }: ContactFormProps) {
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
-            setLoading(false);
             return;
         }
 
         setErrors({});
+        setLoading(true);
 
         try {
             const res = await fetch("/api/contact", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
             });
 
             if (res.ok) {
                 setStatus("success");
-
-                setFormData({
-                    name: "",
-                    email: "",
-                    dates: "",
-                    message: "",
-                });
-
+                setFormData({ name: "", email: "", dates: "", message: "" });
+                setCheckIn(null);
+                setCheckOut(null);
                 setShowCalendar(false);
             } else {
                 setStatus("error");
@@ -125,92 +125,216 @@ export default function ContactForm({ messages }: ContactFormProps) {
 
         setLoading(false);
     };
-    // -------- Calendar Utilities --------
 
-    const startOfMonth = new Date(
-        currentMonth.getFullYear(),
-        currentMonth.getMonth(),
-        1
-    );
+    // ---------------------------
+    // HOTEL LOGIC
+    // ---------------------------
 
-    const endOfMonth = new Date(
-        currentMonth.getFullYear(),
-        currentMonth.getMonth() + 1,
-        0
-    );
+    function rangeIsFree(start: Date, end: Date) {
+        const temp = new Date(start);
 
-    const daysInMonth = endOfMonth.getDate();
-    const startDay = startOfMonth.getDay(); // 0 = Sunday
-
-    const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    // -------- Date Formatting --------
-
-    const formatDateRange = (start: Date, end: Date) => {
-        const dayStart = start.getDate();
-        const dayEnd = end.getDate();
-
-        const monthStart = start.toLocaleString("en-GB", { month: "long" });
-        const monthEnd = end.toLocaleString("en-GB", { month: "long" });
-
-        const year = end.getFullYear();
-
-        // Mismo mes
-        if (start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear()) {
-            return `${dayStart} – ${dayEnd} ${monthEnd} ${year}`;
+        while (temp < end) {
+            if (occupiedNights.has(formatKey(temp))) {
+                return false;
+            }
+            temp.setDate(temp.getDate() + 1);
         }
 
-        // Mes distinto
-        return `${dayStart} ${monthStart} – ${dayEnd} ${monthEnd} ${year}`;
-    };
+        return true;
+    }
 
+    function handleDayClick(date: Date) {
 
-    // -------- Day Selection --------
+        const key = formatKey(date);
 
-    const handleDayClick = (day: number) => {
-        const selectedDate = new Date(
-            currentMonth.getFullYear(),
-            currentMonth.getMonth(),
-            day
-        );
-
-        if (!checkIn || (checkIn && checkOut)) {
-            setCheckIn(selectedDate);
-            setCheckOut(null);
+        // Reiniciar si ya había rango
+        if (checkIn && checkOut) {
+            if (!occupiedNights.has(key)) {
+                setCheckIn(date);
+                setCheckOut(null);
+            }
             return;
         }
 
+        // Seleccionar check-in
+        if (!checkIn) {
+            if (occupiedNights.has(key)) return;
+            setCheckIn(date);
+            return;
+        }
+
+        // Seleccionar check-out
         if (checkIn && !checkOut) {
-            if (selectedDate < checkIn) {
-                setCheckIn(selectedDate);
+
+            if (date <= checkIn) {
+                if (!occupiedNights.has(key)) {
+                    setCheckIn(date);
+                }
                 return;
             }
 
-            if (selectedDate.getTime() === checkIn.getTime()) {
-                return;
-            }
+            if (!rangeIsFree(checkIn, date)) return;
 
-            setCheckOut(selectedDate);
+            setCheckOut(date);
 
-            const formatted = formatDateRange(checkIn, selectedDate);
-
-            setFormData((prev) => ({
+            setFormData(prev => ({
                 ...prev,
-                dates: formatted,
+                dates: `${checkIn.toLocaleDateString()} – ${date.toLocaleDateString()}`
             }));
 
             setShowCalendar(false);
         }
-    };
+    }
 
-    // -----------------------------
-    // RENDER
-    // -----------------------------
+    // ---------------------------
+    // CALENDAR RENDER
+    // ---------------------------
+
+    const nextMonth = new Date(
+        currentMonth.getFullYear(),
+        currentMonth.getMonth() + 1,
+        1
+    );
+
+    function renderMonth(monthDate: Date) {
+
+        const startOfMonth = new Date(
+            monthDate.getFullYear(),
+            monthDate.getMonth(),
+            1
+        );
+
+        const endOfMonth = new Date(
+            monthDate.getFullYear(),
+            monthDate.getMonth() + 1,
+            0
+        );
+
+        const daysInMonth = endOfMonth.getDate();
+
+        // Día real JS (0=domingo ... 6=sábado)
+        const rawStartDay = startOfMonth.getDay();
+
+        // Convertimos a lunes-first (0 = lunes, 6 = domingo)
+        const startDay = rawStartDay === 0 ? 6 : rawStartDay - 1;
+
+        const days = Array.from(
+            { length: daysInMonth },
+            (_, i) => i + 1
+        );
+
+        return (
+            <div className="flex flex-col items-center">
+
+                {/* DÍAS DE LA SEMANA */}
+                <div className="grid grid-cols-7 text-center mb-3 text-xs tracking-wide text-[#2f2f2f]/60">
+                    {["L", "M", "X", "J", "V", "S", "D"].map((day, index) => (
+                        <div key={index} className="w-9">
+                            {day}
+                        </div>
+                    ))}
+                </div>
+
+                {/* GRID DEL MES */}
+                <div className="grid grid-cols-7 text-center">
+
+                    {Array.from({ length: startDay }).map((_, i) => (
+                        <div key={i} />
+                    ))}
+
+                    {days.map(day => {
+
+                        const date = new Date(
+                            monthDate.getFullYear(),
+                            monthDate.getMonth(),
+                            day
+                        );
+
+                        const key = formatKey(date);
+
+                        const isPast = date < today;
+                        const isOccupied = occupiedNights.has(key);
+
+                        const previousDay = new Date(date);
+                        previousDay.setDate(previousDay.getDate() - 1);
+                        const previousKey = formatKey(previousDay);
+
+                        const isBookingCheckin =
+                            isOccupied && !occupiedNights.has(previousKey);
+
+                        const isSelectedStart =
+                            checkIn &&
+                            date.toDateString() === checkIn.toDateString();
+
+                        const isSelectedEnd =
+                            checkOut &&
+                            date.toDateString() === checkOut.toDateString();
+
+                        const isInRange =
+                            checkIn &&
+                            checkOut &&
+                            date > checkIn &&
+                            date < checkOut;
+
+                        const clickable =
+                            !isPast && (
+                                (!checkIn && !isOccupied) ||
+                                (checkIn &&
+                                    !checkOut &&
+                                    date > checkIn &&
+                                    rangeIsFree(checkIn, date)) ||
+                                (checkIn &&
+                                    checkOut &&
+                                    !isOccupied)
+                            );
+
+                        return (
+                            <div
+                                key={day}
+                                onClick={() =>
+                                    clickable && handleDayClick(date)
+                                }
+                                className={`
+                                relative w-9 h-9 flex items-center justify-center
+                                ${clickable ? "cursor-pointer" : "cursor-default"}
+                                ${isPast ? "text-[#EFE9E2]" : ""}
+                                ${isOccupied && !isBookingCheckin ? "text-[#8F887F]" : ""}
+                                ${(isSelectedStart || isSelectedEnd || isInRange)
+                                        ? "bg-[#EFE9E2] text-[#2f2f2f] rounded-full"
+                                        : ""
+                                    }
+                            `}
+                            >
+
+                                {isBookingCheckin && !isPast && (
+                                    <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                        <span
+                                            className="w-full h-full bg-[#EFE9E2] rounded-full"
+                                            style={{
+                                                clipPath: "inset(0 0 0 50%)",
+                                                transform: "rotate(45deg)",
+                                            }}
+                                        />
+                                    </span>
+                                )}
+
+                                <span className="relative z-10">
+                                    {day}
+                                </span>
+
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        );
+    }
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     return (
         <form onSubmit={handleSubmit} noValidate className="space-y-10">
+
             {/* NAME */}
             <div>
                 <label className="block text-sm uppercase tracking-[0.3em] text-[#2f2f2f]/70 mb-4">
@@ -222,11 +346,11 @@ export default function ContactForm({ messages }: ContactFormProps) {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full border-b border-[#d6cfc7] bg-transparent py-3 focus:outline-none focus:border-[#2f2f2f]"
+                    className="w-full border-b py-3 bg-transparent"
                 />
 
                 {errors.name && (
-                    <p className="text-[#8A8A8A] text-xs mt-2 tracking-[0.12em]">
+                    <p className="text-gray-500 text-sm mt-2">
                         {errors.name}
                     </p>
                 )}
@@ -243,11 +367,11 @@ export default function ContactForm({ messages }: ContactFormProps) {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full border-b border-[#d6cfc7] bg-transparent py-3 focus:outline-none focus:border-[#2f2f2f]"
+                    className="w-full border-b py-3 bg-transparent"
                 />
 
                 {errors.email && (
-                    <p className="text-[#8A8A8A] text-xs mt-2 tracking-[0.12em]">
+                    <p className="text-gray-500 text-sm mt-2">
                         {errors.email}
                     </p>
                 )}
@@ -264,122 +388,66 @@ export default function ContactForm({ messages }: ContactFormProps) {
                     readOnly
                     name="dates"
                     value={formData.dates}
-                    onClick={handleDateClick}
+                    onClick={() => setShowCalendar(prev => !prev)}
                     placeholder="Select dates"
-                    className="w-full border-b border-[#d6cfc7] bg-transparent py-3 focus:outline-none focus:border-[#2f2f2f] cursor-pointer"
+                    className="w-full border-b py-3 bg-transparent cursor-pointer"
                 />
+            </div>
 
-                {showCalendar && (
-                    <div className="mt-8 border border-[#eae6df] p-8">
+            {showCalendar && (
+                <div className="border p-6">
 
-                        {/* Month Navigation */}
-                        <div className="flex justify-between items-center mb-6">
-                            <button
-                                type="button"
-                                onClick={() =>
-                                    setCurrentMonth(
-                                        new Date(
-                                            currentMonth.getFullYear(),
-                                            currentMonth.getMonth() - 1,
-                                            1
-                                        )
+                    <div className="flex justify-between mb-4">
+                        <button
+                            type="button"
+                            onClick={() =>
+                                setCurrentMonth(
+                                    new Date(
+                                        currentMonth.getFullYear(),
+                                        currentMonth.getMonth() - 1,
+                                        1
                                     )
-                                }
-                                className="text-xs tracking-[0.2em] text-[#8A8A8A] hover:text-[#2f2f2f]"
-                            >
-                                PREV
-                            </button>
+                                )
+                            }
+                            className="cursor-pointer"
+                        >
+                            Prev
+                        </button>
 
-                            <div className="text-sm tracking-[0.2em] text-[#2f2f2f]">
-                                {currentMonth.toLocaleString("default", { month: "long" })}{" "}
-                                {currentMonth.getFullYear()}
+                        <div />
+
+                        <button
+                            type="button"
+                            onClick={() =>
+                                setCurrentMonth(
+                                    new Date(
+                                        currentMonth.getFullYear(),
+                                        currentMonth.getMonth() - 1,
+                                        1
+                                    )
+                                )
+                            }
+                            className="cursor-pointer"
+                        >
+                            Next
+                        </button>                    </div>
+
+                    <div className="flex justify-center gap-12">
+                        <div className="flex flex-col items-center">
+                            <div className="mb-4 text-sm tracking-wide uppercase">
+                                {currentMonth.toLocaleString("default", { month: "long" })} {currentMonth.getFullYear()}
                             </div>
-
-                            <button
-                                type="button"
-                                onClick={() =>
-                                    setCurrentMonth(
-                                        new Date(
-                                            currentMonth.getFullYear(),
-                                            currentMonth.getMonth() + 1,
-                                            1
-                                        )
-                                    )
-                                }
-                                className="text-xs tracking-[0.2em] text-[#8A8A8A] hover:text-[#2f2f2f]"
-                            >
-                                NEXT
-                            </button>
+                            {renderMonth(currentMonth)}
                         </div>
-
-                        {/* Week Days */}
-                        <div className="grid grid-cols-7 text-xs tracking-[0.2em] text-[#8A8A8A] mb-4">
-                            {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
-                                <div key={index} className="text-center">
-                                    {day}
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Days Grid */}
-                        <div className="grid grid-cols-7 gap-y-3 text-center text-sm">
-
-                            {/* Empty spaces before month starts */}
-                            {Array.from({ length: startDay }).map((_, index) => (
-                                <div key={`empty-${index}`} />
-                            ))}
-
-                            {/* Days */}
-                            {daysArray.map((day) => {
-                                const dateObj = new Date(
-                                    currentMonth.getFullYear(),
-                                    currentMonth.getMonth(),
-                                    day
-                                );
-
-                                const isPast =
-                                    dateObj < today &&
-                                    dateObj.toDateString() !== today.toDateString();
-
-                                const isCheckIn =
-                                    checkIn &&
-                                    dateObj.toDateString() === checkIn.toDateString();
-
-                                const isCheckOut =
-                                    checkOut &&
-                                    dateObj.toDateString() === checkOut.toDateString();
-
-                                const isInRange =
-                                    checkIn &&
-                                    checkOut &&
-                                    dateObj > checkIn &&
-                                    dateObj < checkOut;
-
-                                return (
-                                    <div
-                                        key={day}
-                                        onClick={() => {
-                                            if (!isPast) handleDayClick(day);
-                                        }}
-                                        className={`cursor-pointer transition flex items-center justify-center w-8 h-8 mx-auto
-  ${isCheckIn || isCheckOut
-                                                ? "bg-[#A8C4A0] text-white rounded-full"
-                                                : isInRange
-                                                    ? "bg-[#A8C4A0]/25 text-[#2f2f2f] rounded-full"
-                                                    : isPast
-                                                        ? "text-[#D6D1CA] cursor-not-allowed"
-                                                        : "text-[#8A8A8A] hover:text-[#2f2f2f]"
-                                            }
-`}
-                                    >
-                                        {day}
-                                    </div>
-                                );
-                            })}
+                        <div className="flex flex-col items-center">
+                            <div className="mb-4 text-sm tracking-wide uppercase">
+                                {nextMonth.toLocaleString("default", { month: "long" })} {nextMonth.getFullYear()}
+                            </div>
+                            {renderMonth(nextMonth)}
                         </div>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
 
             {/* MESSAGE */}
             <div>
@@ -389,41 +457,52 @@ export default function ContactForm({ messages }: ContactFormProps) {
 
                 <textarea
                     name="message"
-                    rows={4}
                     value={formData.message}
                     onChange={handleChange}
-                    className="w-full border-b border-[#d6cfc7] bg-transparent py-3 focus:outline-none focus:border-[#2f2f2f]"
+                    className="w-full border-b py-3 bg-transparent"
                 />
 
                 {errors.message && (
-                    <p className="text-[#8A8A8A] text-xs mt-2 tracking-[0.12em]">
+                    <p className="text-gray-500 text-sm mt-2">
                         {errors.message}
                     </p>
                 )}
             </div>
 
-            {/* BUTTON + STATUS */}
-            <div className="pt-6">
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="border border-[#2f2f2f]/60 text-[#2f2f2f] px-10 py-3 tracking-[0.25em] text-xs uppercase hover:bg-[#2f2f2f] hover:text-white transition-all duration-500"
-                >
-                    {loading ? messages.status.sending : messages.button}
-                </button>
+            {/* BUTTON */}
+            <button
+                type="submit"
+                disabled={loading}
+                className="
+                    border border-[#2f2f2f]/60 
+                    text-[#2f2f2f] 
+                    px-10 py-3 
+                    tracking-[0.25em] 
+                    text-xs 
+                    uppercase 
+                    cursor-pointer
+                    transition-all duration-500
+                    hover:bg-[#2f2f2f] 
+                    hover:text-white
+                    disabled:opacity-50
+                    disabled:cursor-not-allowed
+                "
+            >
+                {loading ? messages.status.sending : messages.button}
+            </button>
 
-                {status === "success" && (
-                    <p className="text-[#A8C4A0] text-xs mt-4 tracking-[0.15em]">
-                        {messages.status.success}
-                    </p>
-                )}
+            {status === "success" && (
+                <p className="text-[#A8C4A0] text-xs mt-4 tracking-[0.15em]">
+                    {messages.status.success}
+                </p>
+            )}
 
-                {status === "error" && (
-                    <p className="text-[#8A8A8A] text-xs mt-4 tracking-[0.15em]">
-                        {messages.status.error}
-                    </p>
-                )}
-            </div>
+            {status === "error" && (
+                <p className="text-gray-500 text-xs mt-4 tracking-[0.15em]">
+                    {messages.status.error}
+                </p>
+            )}
+
         </form>
     );
 }

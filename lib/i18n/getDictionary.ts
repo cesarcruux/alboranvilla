@@ -1,19 +1,28 @@
-import { locales } from "./config";
+import { Locale } from "./config";
 
-export type Locale = (typeof locales)[number];
+import en from "./dictionaries/en";
+import es from "./dictionaries/es.json";
+import fr from "./dictionaries/fr.json";
+import de from "./dictionaries/de.json";
+import nl from "./dictionaries/nl.json";
+import it from "./dictionaries/it.json";
+import ru from "./dictionaries/ru.json";
+import id from "./dictionaries/id.json";
 
-export type Dictionary = typeof import("./dictionaries/en.json");
+export type Dictionary = typeof en;
+
+// 🔐 Forzamos que todos los diccionarios cumplan exactamente la estructura de "en"
+const dictionaries: Record<Locale, Dictionary> = {
+    en,
+    es,
+    fr,
+    de,
+    nl,
+    it,
+    ru,
+    id,
+};
 
 export async function getDictionary(locale: Locale): Promise<Dictionary> {
-    switch (locale) {
-        case "es":
-            return (await import("./dictionaries/es.json")).default as Dictionary;
-        case "fr":
-            return (await import("./dictionaries/fr.json")).default as Dictionary;
-        case "de":
-            return (await import("./dictionaries/de.json")).default as Dictionary;
-        case "en":
-        default:
-            return (await import("./dictionaries/en.json")).default as Dictionary;
-    }
+    return dictionaries[locale];
 }

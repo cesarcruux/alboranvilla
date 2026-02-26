@@ -1,4 +1,10 @@
-export default function FooterElegant() {
+import Link from "next/link";
+
+type Props = {
+    locale: string;
+};
+
+export default function FooterElegant({ locale }: Props) {
     return (
         <footer className="bg-[#efeae3] pt-32 pb-20 px-8 mt-32">
             <div className="max-w-6xl mx-auto">
@@ -19,18 +25,35 @@ export default function FooterElegant() {
 
                     {/* Navigation */}
                     <div className="text-sm uppercase tracking-[0.2em] text-[#2f2f2f]/80 space-y-4">
-                        <a href="/en/villa" className="block hover:text-[#A8C4A0] transition-colors">
+
+                        <Link
+                            href={`/${locale}/villa`}
+                            className="block hover:text-[#A8C4A0] transition-colors"
+                        >
                             Villa
-                        </a>
-                        <a href="#" className="block hover:text-[#A8C4A0] transition-colors">
+                        </Link>
+
+                        <Link
+                            href={`/${locale}/experience`}
+                            className="block hover:text-[#A8C4A0] transition-colors"
+                        >
                             Experience
-                        </a>
-                        <a href="#" className="block hover:text-[#A8C4A0] transition-colors">
+                        </Link>
+
+                        <Link
+                            href={`/${locale}/journal`}
+                            className="block hover:text-[#A8C4A0] transition-colors"
+                        >
                             Journal
-                        </a>
-                        <a href="#" className="block hover:text-[#A8C4A0] transition-colors">
+                        </Link>
+
+                        <Link
+                            href={`/${locale}/contact`}
+                            className="block hover:text-[#A8C4A0] transition-colors"
+                        >
                             Contact
-                        </a>
+                        </Link>
+
                     </div>
 
                     {/* Quiet Note */}
