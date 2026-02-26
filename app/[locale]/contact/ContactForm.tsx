@@ -422,7 +422,7 @@ export default function ContactForm({ messages }: ContactFormProps) {
                                 setCurrentMonth(
                                     new Date(
                                         currentMonth.getFullYear(),
-                                        currentMonth.getMonth() - 1,
+                                        currentMonth.getMonth() + 1,
                                         1
                                     )
                                 )
