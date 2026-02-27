@@ -1,13 +1,17 @@
+import Link from "next/link";
+
 type FinalInvitationProps = {
     title: string;
     subtitle: string;
     cta: string;
+    locale: string;
 };
 
 export default function FinalInvitation({
     title,
     subtitle,
     cta,
+    locale,
 }: FinalInvitationProps) {
     return (
         <section className="py-32 px-6 bg-[#f3efe9] text-center">
@@ -21,9 +25,12 @@ export default function FinalInvitation({
                     {subtitle}
                 </p>
 
-                <button className="border border-[#2f2f2f]/60 text-[#2f2f2f] px-10 py-3 tracking-[0.25em] text-xs uppercase hover:bg-[#2f2f2f] hover:text-white transition-all duration-500">
+                <Link
+                    href={`/${locale}/contact`}
+                    className="inline-block border border-[#2f2f2f]/60 text-[#2f2f2f] px-10 py-3 tracking-[0.25em] text-xs uppercase hover:bg-[#2f2f2f] hover:text-white transition-all duration-500"
+                >
                     {cta}
-                </button>
+                </Link>
 
             </div>
         </section>

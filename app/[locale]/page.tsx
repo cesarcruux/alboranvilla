@@ -51,7 +51,7 @@ export default async function Home({
                 title={dictionary.home.finalInvitation.title}
                 subtitle={dictionary.home.finalInvitation.subtitle}
                 cta={dictionary.home.finalInvitation.cta}
-            />
-        </main>
+                locale={locale}
+            />        </main>
     );
 }
