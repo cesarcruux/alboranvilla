@@ -28,25 +28,35 @@ function addDays(dateStr: string, days: number) {
 }
 
 async function fetchICS(url: string): Promise<string> {
-    const response = await fetch(url, { cache: "no-store" });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000); // 8s timeout
 
-    if (!response.ok) {
-        throw new Error("Failed to fetch ICS");
+    try {
+        const response = await fetch(url, {
+            cache: "no-store",
+            signal: controller.signal,
+        });
+
+        if (!response.ok) {
+            throw new Error("ICS fetch failed");
+        }
+
+        return await response.text();
+    } finally {
+        clearTimeout(timeout);
     }
-
-    return await response.text();
 }
 
 function parseICS(icsText: string) {
     const occupiedNights = new Set<string>();
-    const checkinDates = new Set<string>();
-    const checkoutDates = new Set<string>();
+
+    if (!icsText.includes("BEGIN:VEVENT")) {
+        return { occupiedNights: [] };
+    }
 
     const blocks = icsText.split("BEGIN:VEVENT");
 
     for (const block of blocks) {
-        if (!block.includes("DTSTART")) continue;
-
         const startMatch = block.match(/DTSTART.*:(\d{8})/);
         const endMatch = block.match(/DTEND.*:(\d{8})/);
 
@@ -65,11 +75,6 @@ function parseICS(icsText: string) {
             6
         )}-${endRaw.slice(6, 8)}`;
 
-        // Register check-in & checkout
-        checkinDates.add(startKey);
-        checkoutDates.add(endKey);
-
-        // Register occupied nights (start inclusive, end exclusive)
         let current = startKey;
 
         while (current < endKey) {
@@ -80,8 +85,6 @@ function parseICS(icsText: string) {
 
     return {
         occupiedNights: Array.from(occupiedNights),
-        checkinDates: Array.from(checkinDates),
-        checkoutDates: Array.from(checkoutDates),
     };
 }
 
@@ -96,10 +99,12 @@ export async function GET() {
         const data = parseICS(icsText);
 
         return NextResponse.json(data);
-    } catch {
-        return NextResponse.json(
-            { error: "Failed to fetch availability" },
-            { status: 500 }
-        );
+    } catch (error) {
+        console.error("Availability fetch error:", error);
+
+        // Fail gracefully → return empty availability
+        return NextResponse.json({
+            occupiedNights: [],
+        });
     }
 }

@@ -44,8 +44,7 @@ export function useCalendar() {
 
     function handleDayClick(
         date: Date,
-        today: Date,
-        setFormDates: (value: string) => void
+        today: Date
     ) {
 
         const key = formatKey(date);
@@ -77,9 +76,6 @@ export function useCalendar() {
 
             setCheckOut(date);
 
-            setFormDates(
-                `${checkIn.toLocaleDateString()} – ${date.toLocaleDateString()}`
-            );
         }
     }
 

@@ -2,12 +2,35 @@ import Image from "next/image";
 import Link from "next/link";
 import { getDictionary } from "@/lib/i18n/getDictionary";
 import type { Locale } from "@/lib/i18n/config";
+import { locales } from "@/lib/i18n/config";
 
-export async function generateMetadata() {
+export async function generateMetadata({
+    params,
+}: {
+    params: { locale: string };
+}) {
+
+    const { locale } = params;
+
+    const baseUrl = "https://www.alboranvilla.com";
+    const canonicalUrl = `${baseUrl}/${locale}/villa`;
+
+    const languageAlternates: Record<string, string> = {};
+
+    for (const loc of locales) {
+        languageAlternates[loc] = `${baseUrl}/${loc}/villa`;
+    }
+
+    languageAlternates["x-default"] = `${baseUrl}/en/villa`;
+
     return {
         title: "The Villa – Alborán",
         description:
             "A private Mediterranean villa in Gili Air, Indonesia, designed around light, proportion and quiet refinement.",
+        alternates: {
+            canonical: canonicalUrl,
+            languages: languageAlternates,
+        },
     };
 }
 

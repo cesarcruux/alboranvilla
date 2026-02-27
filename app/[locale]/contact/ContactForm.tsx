@@ -25,26 +25,11 @@ type ContactFormProps = {
     };
 };
 
-function formatKey(date: Date) {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, "0");
-    const d = String(date.getDate()).padStart(2, "0");
-    return `${y}-${m}-${d}`;
-}
-
 export default function ContactForm({ messages }: ContactFormProps) {
 
-    const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        dates: "",
-        message: "",
-    });
-
-    const [loading, setLoading] = useState(false);
-    const [status, setStatus] = useState<"success" | "error" | null>(null);
-    const [errors, setErrors] = useState<{ name?: string; email?: string; message?: string }>({});
-    const [showCalendar, setShowCalendar] = useState(false);
+    // ---------------------------
+    // CALENDAR HOOK
+    // ---------------------------
 
     const {
         currentMonth,
@@ -59,11 +44,62 @@ export default function ContactForm({ messages }: ContactFormProps) {
     } = useCalendar();
 
     // ---------------------------
+    // LOCAL STATE
+    // ---------------------------
+
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        dates: "",
+        message: "",
+    });
+
+    const [loading, setLoading] = useState(false);
+    const [status, setStatus] = useState<"success" | "error" | null>(null);
+    const [errors, setErrors] = useState<{ name?: string; email?: string; message?: string }>({});
+    const [showCalendar, setShowCalendar] = useState(false);
+
+    // ---------------------------
+    // SYNC DATES → FORM
+    // ---------------------------
+
+    useEffect(() => {
+
+        // When range is complete → close calendar + fill input
+        if (checkIn && checkOut) {
+
+            const formatted =
+                `${checkIn.toLocaleDateString()} – ${checkOut.toLocaleDateString()}`;
+
+            setFormData(prev => ({
+                ...prev,
+                dates: formatted
+            }));
+
+            setShowCalendar(false);
+        }
+
+        // When cleared → empty input
+        if (!checkIn && !checkOut) {
+            setFormData(prev => ({
+                ...prev,
+                dates: ""
+            }));
+        }
+
+    }, [checkIn, checkOut]);
+
+    // ---------------------------
     // FORM HANDLERS
     // ---------------------------
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const handleChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
+        setFormData(prev => ({
+            ...prev,
+            [e.target.name]: e.target.value
+        }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -102,13 +138,21 @@ export default function ContactForm({ messages }: ContactFormProps) {
 
             if (res.ok) {
                 setStatus("success");
-                setFormData({ name: "", email: "", dates: "", message: "" });
+
+                setFormData({
+                    name: "",
+                    email: "",
+                    dates: "",
+                    message: "",
+                });
+
                 setCheckIn(null);
                 setCheckOut(null);
                 setShowCalendar(false);
             } else {
                 setStatus("error");
             }
+
         } catch {
             setStatus("error");
         }
@@ -117,17 +161,15 @@ export default function ContactForm({ messages }: ContactFormProps) {
     };
 
     // ---------------------------
-    // HOTEL LOGIC
-    // ---------------------------
-
-
-
-    // ---------------------------
-    // CALENDAR RENDER
+    // TODAY (para Calendar)
     // ---------------------------
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+
+    // ---------------------------
+    // RENDER
+    // ---------------------------
 
     return (
         <form onSubmit={handleSubmit} noValidate className="space-y-10">
@@ -200,15 +242,9 @@ export default function ContactForm({ messages }: ContactFormProps) {
                     occupiedNights={occupiedNights}
                     handleDayClick={handleDayClick}
                     rangeIsFree={rangeIsFree}
-                    setFormDates={(value: string) =>
-                        setFormData(prev => ({
-                            ...prev,
-                            dates: value
-                        }))
-                    }
-                    closeCalendar={() => setShowCalendar(false)}
                 />
             )}
+
             {/* MESSAGE */}
             <div>
                 <label className="block text-sm uppercase tracking-[0.3em] text-[#2f2f2f]/70 mb-4">

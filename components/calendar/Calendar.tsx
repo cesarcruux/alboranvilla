@@ -5,15 +5,9 @@ type CalendarProps = {
     setCurrentMonth: (date: Date) => void;
     checkIn: Date | null;
     checkOut: Date | null;
-    occupiedNights: string[]; // ← ahora es array
-    handleDayClick: (
-        date: Date,
-        today: Date,
-        setFormDates: (value: string) => void
-    ) => void;
+    occupiedNights: string[];
+    handleDayClick: (date: Date, today: Date) => void;
     rangeIsFree: (start: Date, end: Date) => boolean;
-    setFormDates: (value: string) => void;
-    closeCalendar: () => void;
 };
 
 function formatKey(date: Date) {
@@ -30,15 +24,12 @@ export default function Calendar({
     checkOut,
     occupiedNights,
     handleDayClick,
-    rangeIsFree,
-    setFormDates,
-    closeCalendar
+    rangeIsFree
 }: CalendarProps) {
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Convertimos array → Set dentro del componente cliente
     const occupiedSet = new Set(occupiedNights);
 
     const nextMonth = new Date(
@@ -139,15 +130,7 @@ export default function Calendar({
                                 key={day}
                                 onClick={() => {
                                     if (!clickable) return;
-
-                                    handleDayClick(
-                                        date,
-                                        today,
-                                        (value: string) => {
-                                            setFormDates(value);
-                                            closeCalendar();
-                                        }
-                                    );
+                                    handleDayClick(date, today);
                                 }}
                                 className={`
                                     relative w-9 h-9 flex items-center justify-center
@@ -226,6 +209,7 @@ export default function Calendar({
                 {renderMonth(currentMonth)}
                 {renderMonth(nextMonth)}
             </div>
+
         </div>
     );
 }
