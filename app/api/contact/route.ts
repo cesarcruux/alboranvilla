@@ -11,58 +11,21 @@ function getTimestamp() {
   }).format(new Date());
 }
 
-/**
- * Basic email validation
- */
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-/**
- * Sanitize & trim input
- */
-function sanitize(input: string) {
-  return input.trim();
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    if (!body || typeof body !== "object") {
-      return NextResponse.json(
-        { error: "Invalid request body" },
-        { status: 400 }
-      );
-    }
-
-    let { name, email, dates, message } = body;
+    const name = body.name?.trim();
+    const email = body.email?.trim();
+    const dates = body.dates?.trim();
+    const message = body.message?.trim();
 
     // -----------------------------
-    // Type validation
-    // -----------------------------
-    if (
-      typeof name !== "string" ||
-      typeof email !== "string" ||
-      typeof dates !== "string" ||
-      typeof message !== "string"
-    ) {
-      return NextResponse.json(
-        { error: "Invalid field types" },
-        { status: 400 }
-      );
-    }
-
-    // -----------------------------
-    // Trim & sanitize
-    // -----------------------------
-    name = sanitize(name);
-    email = sanitize(email);
-    dates = sanitize(dates);
-    message = sanitize(message);
-
-    // -----------------------------
-    // Required fields check
+    // Validation
     // -----------------------------
     if (!name || !email || !dates || !message) {
       return NextResponse.json(
@@ -71,9 +34,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // -----------------------------
-    // Email format validation
-    // -----------------------------
     if (!isValidEmail(email)) {
       return NextResponse.json(
         { error: "Invalid email format" },
@@ -81,15 +41,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // -----------------------------
-    // Length limits (anti abuse)
-    // -----------------------------
-    if (
-      name.length > 100 ||
-      email.length > 150 ||
-      dates.length > 150 ||
-      message.length > 5000
-    ) {
+    if (name.length > 120 || message.length > 5000) {
       return NextResponse.json(
         { error: "Input too long" },
         { status: 400 }
@@ -97,7 +49,7 @@ export async function POST(request: Request) {
     }
 
     // -----------------------------
-    // SMTP Transport (IONOS)
+    // SMTP Transport
     // -----------------------------
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
@@ -109,9 +61,10 @@ export async function POST(request: Request) {
       },
     });
 
-    // -----------------------------
-    // Send notification to owner
-    // -----------------------------
+    // =============================
+    // 1️⃣ INTERNAL EMAIL (ALBORÁN)
+    // =============================
+
     await transporter.sendMail({
       from: `"Alborán Villa" <${process.env.SMTP_USER}>`,
       to: process.env.SMTP_USER,
@@ -136,11 +89,82 @@ ${message}
 Sent on:
 ${getTimestamp()}
             `,
+
+      html: `
+<div style="
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: #f8f6f2;
+  padding: 40px 20px;
+">
+  <div style="
+    max-width: 600px;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 6px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  ">
+
+    <div style="text-align: center; margin-bottom: 30px;">
+      <img 
+        src="https://www.alboranvilla.com/logo-email.png"
+        alt="Alborán Villa"
+        style="max-width: 140px; height: auto; display: block; margin: 0 auto;"
+      />
+    </div>
+
+    <p style="margin-bottom: 25px; font-size: 14px; color: #555;">
+      A new enquiry has been received.
+    </p>
+
+    <div style="margin-bottom: 25px;">
+      <p style="margin: 0 0 10px 0;">
+        <strong>Name</strong><br>
+        ${name}
+      </p>
+
+      <p style="margin: 0;">
+        <strong>Email</strong><br>
+        ${email}
+      </p>
+    </div>
+
+    <div style="margin-bottom: 25px;">
+      <p style="margin: 0;">
+        <strong>Stay</strong><br>
+        ${dates}
+      </p>
+    </div>
+
+    <div style="margin-bottom: 30px;">
+      <p style="margin: 0 0 10px 0;">
+        <strong>Message</strong>
+      </p>
+      <p style="
+        margin: 0;
+        line-height: 1.6;
+        color: #444;
+        white-space: pre-line;
+      ">
+        ${message}
+      </p>
+    </div>
+
+    <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;" />
+
+    <p style="font-size: 12px; color: #999; margin: 0;">
+      Sent on ${getTimestamp()}
+    </p>
+
+  </div>
+</div>
+            `,
     });
 
-    // -----------------------------
-    // Auto-reply to guest
-    // -----------------------------
+    // =============================
+    // 2️⃣ AUTO-REPLY TO GUEST
+    // =============================
+
     await transporter.sendMail({
       from: `"Alborán Villa" <${process.env.SMTP_USER}>`,
       to: email,
@@ -155,10 +179,66 @@ We have received your enquiry for:
 
 ${dates}
 
-Our team will review your request and get back to you shortly.
+Our team will carefully review your request and respond shortly.
 
 Warm regards,
 Alborán Villa
+            `,
+
+      html: `
+<div style="
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: #f8f6f2;
+  padding: 40px 20px;
+">
+  <div style="
+    max-width: 600px;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 6px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  ">
+
+    <div style="text-align: center; margin-bottom: 30px;">
+      <img 
+        src="https://www.alboranvilla.com/logo-email.png"
+        alt="Alborán Villa"
+        style="max-width: 140px; height: auto; display: block; margin: 0 auto;"
+      />
+    </div>
+
+    <p style="margin-bottom: 20px; color: #444;">
+      Dear ${name},
+    </p>
+
+    <p style="margin-bottom: 20px; color: #444; line-height: 1.6;">
+      Thank you for contacting Alborán Villa.
+    </p>
+
+    <p style="margin-bottom: 20px; color: #444;">
+      We have received your enquiry for:
+    </p>
+
+    <p style="
+      margin-bottom: 25px;
+      font-weight: 500;
+      color: #2f2f2f;
+    ">
+      ${dates}
+    </p>
+
+    <p style="margin-bottom: 30px; color: #444; line-height: 1.6;">
+      Our team will carefully review your request and respond shortly.
+    </p>
+
+    <p style="color: #444;">
+      Warm regards,<br>
+      Alborán Villa
+    </p>
+
+  </div>
+</div>
             `,
     });
 
@@ -168,7 +248,7 @@ Alborán Villa
     console.error("Contact form error:", error);
 
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Something went wrong" },
       { status: 500 }
     );
   }
