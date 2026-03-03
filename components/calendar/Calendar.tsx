@@ -65,15 +65,17 @@ export default function Calendar({
         return (
             <div className="flex flex-col items-center">
 
+                {/* Week Days */}
                 <div className="grid grid-cols-7 text-center mb-3 text-xs tracking-wide text-[#2f2f2f]/60">
                     {["L", "M", "X", "J", "V", "S", "D"].map((day, index) => (
-                        <div key={index} className="w-9">
+                        <div key={index} className="w-8 md:w-9">
                             {day}
                         </div>
                     ))}
                 </div>
 
-                <div className="grid grid-cols-7 text-center">
+                {/* Days */}
+                <div className="grid grid-cols-7 text-center gap-y-1">
 
                     {Array.from({ length: startDay }).map((_, i) => (
                         <div key={i} />
@@ -133,7 +135,8 @@ export default function Calendar({
                                     handleDayClick(date, today);
                                 }}
                                 className={`
-                                    relative w-9 h-9 flex items-center justify-center
+                                    relative w-8 h-8 md:w-9 md:h-9 flex items-center justify-center
+                                    text-sm md:text-base
                                     ${clickable ? "cursor-pointer" : "cursor-default"}
                                     ${isPast ? "text-[#EFE9E2]" : ""}
                                     ${isOccupied && !isBookingCheckin ? "text-[#8F887F]" : ""}
@@ -167,9 +170,10 @@ export default function Calendar({
     }
 
     return (
-        <div className="border p-6">
+        <div className="border p-4 md:p-6">
 
-            <div className="flex justify-between mb-4">
+            {/* Navigation */}
+            <div className="flex justify-between mb-6">
                 <button
                     type="button"
                     onClick={() =>
@@ -181,7 +185,7 @@ export default function Calendar({
                             )
                         )
                     }
-                    className="cursor-pointer"
+                    className="cursor-pointer text-sm md:text-base"
                 >
                     Prev
                 </button>
@@ -199,13 +203,14 @@ export default function Calendar({
                             )
                         )
                     }
-                    className="cursor-pointer"
+                    className="cursor-pointer text-sm md:text-base"
                 >
                     Next
                 </button>
             </div>
 
-            <div className="flex justify-center gap-12">
+            {/* Months */}
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-10 md:gap-12">
                 {renderMonth(currentMonth)}
                 {renderMonth(nextMonth)}
             </div>
