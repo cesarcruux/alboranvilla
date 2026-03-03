@@ -61,13 +61,13 @@ export default function ContactForm({ messages }: ContactFormProps) {
     const datesRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
-        if (!showCalendar && datesRef.current) {
+        if (checkOut && datesRef.current) {
             datesRef.current.scrollIntoView({
                 behavior: "smooth",
                 block: "center"
             });
         }
-    }, [showCalendar]);
+    }, [checkOut]);
 
     // ---------------------------
     // SYNC DATES → FORM
