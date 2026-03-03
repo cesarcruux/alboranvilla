@@ -4,6 +4,7 @@ import Storytelling from "../../components/sections/Storytelling";
 import VillaHighlights from "../../components/sections/VillaHighlights";
 import LocationAtmosphere from "../../components/sections/LocationAtmosphere";
 import FinalInvitation from "../../components/sections/FinalInvitation";
+import GuestReflections from '@/components/sections/GuestReflections'
 
 export default async function Home({
     params,
@@ -46,6 +47,8 @@ export default async function Home({
                     the residence offers a secluded and refined retreat experience.
                 </p>
             </section>
+
+            <GuestReflections />
 
             <FinalInvitation
                 title={dictionary.home.finalInvitation.title}

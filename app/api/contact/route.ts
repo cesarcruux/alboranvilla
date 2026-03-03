@@ -105,13 +105,19 @@ ${getTimestamp()}
     box-shadow: 0 10px 30px rgba(0,0,0,0.05);
   ">
 
-    <div style="text-align: center; margin-bottom: 30px;">
-      <img 
-        src="https://www.alboranvilla.com/logo-email.png"
-        alt="Alborán Villa"
-        style="max-width: 140px; height: auto; display: block; margin: 0 auto;"
-      />
-    </div>
+<div style="text-align: center; margin-bottom: 30px;">
+  <div style="
+    background-color: #ffffff;
+    display: inline-block;
+    padding: 10px 20px;
+  ">
+    <img 
+      src="https://www.alboranvilla.com/logo-email.png"
+      alt="Alborán Villa"
+      style="max-width: 140px; height: auto; display: block;"
+    />
+  </div>
+</div>
 
     <p style="margin-bottom: 25px; font-size: 14px; color: #555;">
       A new enquiry has been received.
@@ -200,14 +206,19 @@ Alborán Villa
     box-shadow: 0 10px 30px rgba(0,0,0,0.05);
   ">
 
-    <div style="text-align: center; margin-bottom: 30px;">
-      <img 
-        src="https://www.alboranvilla.com/logo-email.png"
-        alt="Alborán Villa"
-        style="max-width: 140px; height: auto; display: block; margin: 0 auto;"
-      />
-    </div>
-
+<div style="text-align: center; margin-bottom: 30px;">
+  <div style="
+    background-color: #ffffff;
+    display: inline-block;
+    padding: 10px 20px;
+  ">
+    <img 
+      src="https://www.alboranvilla.com/logo-email.png"
+      alt="Alborán Villa"
+      style="max-width: 140px; height: auto; display: block;"
+    />
+  </div>
+</div>
     <p style="margin-bottom: 20px; color: #444;">
       Dear ${name},
     </p>
