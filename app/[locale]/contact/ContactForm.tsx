@@ -59,6 +59,7 @@ export default function ContactForm({ messages }: ContactFormProps) {
     const [errors, setErrors] = useState<{ name?: string; email?: string; message?: string }>({});
     const [showCalendar, setShowCalendar] = useState(false);
     const datesRef = useRef<HTMLDivElement | null>(null);
+    const calendarRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         if (checkOut && datesRef.current) {
@@ -68,6 +69,15 @@ export default function ContactForm({ messages }: ContactFormProps) {
             });
         }
     }, [checkOut]);
+
+    useEffect(() => {
+        if (showCalendar && calendarRef.current && window.innerWidth < 768) {
+            calendarRef.current.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+        }
+    }, [showCalendar]);
 
     // ---------------------------
     // SYNC DATES → FORM
@@ -244,15 +254,17 @@ export default function ContactForm({ messages }: ContactFormProps) {
             </div>
 
             {showCalendar && (
-                <Calendar
-                    currentMonth={currentMonth}
-                    setCurrentMonth={setCurrentMonth}
-                    checkIn={checkIn}
-                    checkOut={checkOut}
-                    occupiedNights={occupiedNights}
-                    handleDayClick={handleDayClick}
-                    rangeIsFree={rangeIsFree}
-                />
+                <div ref={calendarRef}>
+                    <Calendar
+                        currentMonth={currentMonth}
+                        setCurrentMonth={setCurrentMonth}
+                        checkIn={checkIn}
+                        checkOut={checkOut}
+                        occupiedNights={occupiedNights}
+                        handleDayClick={handleDayClick}
+                        rangeIsFree={rangeIsFree}
+                    />
+                </div>
             )}
 
             {/* MESSAGE */}
