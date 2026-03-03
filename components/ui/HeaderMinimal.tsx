@@ -49,6 +49,7 @@ export default function HeaderMinimal() {
                         Alborán
                     </Link>
 
+                    {/* Desktop Navigation */}
                     <nav className="hidden md:flex gap-12 text-sm uppercase tracking-[0.25em] text-[#2f2f2f]/80 items-center">
                         <Link
                             href={`/${currentLocale}/villa`}
@@ -91,11 +92,11 @@ export default function HeaderMinimal() {
 
                             <div
                                 className={`
-                  absolute right-0 mt-4 bg-[#F8F4F0] border border-[#e4ddd4]
-                  py-4 px-6 space-y-3 text-xs
-                  transition-all duration-300
-                  ${langOpen ? "opacity-100 visible" : "opacity-0 invisible"}
-                `}
+                                    absolute right-0 mt-4 bg-[#F8F4F0] border border-[#e4ddd4]
+                                    py-4 px-6 space-y-3 text-xs
+                                    transition-all duration-300
+                                    ${langOpen ? "opacity-100 visible" : "opacity-0 invisible"}
+                                `}
                             >
                                 {locales
                                     .filter((loc) => loc !== currentLocale)
@@ -113,6 +114,7 @@ export default function HeaderMinimal() {
                         </div>
                     </nav>
 
+                    {/* Mobile Toggle */}
                     <button
                         onClick={() => setMenuOpen(!menuOpen)}
                         className="md:hidden text-[#2f2f2f]"
@@ -124,6 +126,47 @@ export default function HeaderMinimal() {
                     </button>
                 </div>
             </header>
+
+            {/* Mobile Menu */}
+            {menuOpen && (
+                <div className="md:hidden fixed top-[96px] left-0 w-full bg-[#F8F4F0] border-t border-[#e4ddd4] z-40">
+                    <div className="flex flex-col items-center py-10 gap-8 text-sm uppercase tracking-[0.25em] text-[#2f2f2f]/80">
+
+                        <Link
+                            href={`/${currentLocale}/villa`}
+                            onClick={() => setMenuOpen(false)}
+                            className="hover:text-[#A8C4A0] transition-colors"
+                        >
+                            Villa
+                        </Link>
+
+                        <Link
+                            href={`/${currentLocale}/experience`}
+                            onClick={() => setMenuOpen(false)}
+                            className="hover:text-[#A8C4A0] transition-colors"
+                        >
+                            Experience
+                        </Link>
+
+                        <Link
+                            href={`/${currentLocale}/journal`}
+                            onClick={() => setMenuOpen(false)}
+                            className="hover:text-[#A8C4A0] transition-colors"
+                        >
+                            Journal
+                        </Link>
+
+                        <Link
+                            href={`/${currentLocale}/contact`}
+                            onClick={() => setMenuOpen(false)}
+                            className="hover:text-[#A8C4A0] transition-colors"
+                        >
+                            Contact
+                        </Link>
+
+                    </div>
+                </div>
+            )}
         </>
     );
 }
