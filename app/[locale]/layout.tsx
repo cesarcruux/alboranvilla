@@ -14,6 +14,9 @@ export async function generateMetadata(): Promise<Metadata> {
         title: "Alborán Villa – Private Mediterranean Villas in Gili Air",
         description:
             "Alborán Villa is a private Mediterranean-inspired villa project in Gili Air, Indonesia, offering secluded architectural residences with private pools.",
+        verification: {
+            google: "C4mspS04MeLO3t2bsHWaApXoRoUraJGpaeTpv0vtgDk",
+        },
         openGraph: {
             title:
                 "Alborán Villa – Private Mediterranean Villas in Gili Air",
