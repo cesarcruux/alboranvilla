@@ -65,6 +65,13 @@ export default function Calendar({
         return (
             <div className="flex flex-col items-center">
 
+                <div className="mb-4 text-sm md:text-base tracking-wide text-[#2f2f2f]">
+                    {monthDate.toLocaleDateString("en-GB", {
+                        month: "long",
+                        year: "numeric"
+                    })}
+                </div>
+
                 {/* Week Days */}
                 <div className="grid grid-cols-7 text-center mb-3 text-xs tracking-wide text-[#2f2f2f]/60">
                     {["L", "M", "X", "J", "V", "S", "D"].map((day, index) => (
@@ -210,8 +217,7 @@ export default function Calendar({
             </div>
 
             {/* Months */}
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-10 md:gap-12">
-                {renderMonth(currentMonth)}
+            <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-10 md:gap-12">                {renderMonth(currentMonth)}
                 {renderMonth(nextMonth)}
             </div>
 

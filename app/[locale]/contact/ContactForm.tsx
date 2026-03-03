@@ -2,7 +2,7 @@
 
 import Calendar from "@/components/calendar/Calendar";
 import { useCalendar } from "@/hooks/useCalendar";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 type ContactFormProps = {
     messages: {
@@ -58,6 +58,16 @@ export default function ContactForm({ messages }: ContactFormProps) {
     const [status, setStatus] = useState<"success" | "error" | null>(null);
     const [errors, setErrors] = useState<{ name?: string; email?: string; message?: string }>({});
     const [showCalendar, setShowCalendar] = useState(false);
+    const datesRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        if (!showCalendar && datesRef.current) {
+            datesRef.current.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+        }
+    }, [showCalendar]);
 
     // ---------------------------
     // SYNC DATES → FORM
@@ -217,7 +227,7 @@ export default function ContactForm({ messages }: ContactFormProps) {
             </div>
 
             {/* DATES */}
-            <div>
+            <div ref={datesRef}>
                 <label className="block text-sm uppercase tracking-[0.3em] text-[#2f2f2f]/70 mb-4">
                     {messages.labels.dates}
                 </label>
