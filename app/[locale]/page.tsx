@@ -5,6 +5,7 @@ import VillaHighlights from "../../components/sections/VillaHighlights";
 import LocationAtmosphere from "../../components/sections/LocationAtmosphere";
 import FinalInvitation from "../../components/sections/FinalInvitation";
 import GuestReflections from '@/components/sections/GuestReflections'
+import { defaultLocale, locales, type Locale } from "@/lib/i18n/config";
 
 export default async function Home({
     params,
@@ -12,7 +13,10 @@ export default async function Home({
     params: Promise<{ locale: string }>;
 }) {
     const { locale } = await params;
-    const dictionary = await getDictionary(locale as any);
+    const safeLocale: Locale = locales.includes(locale as Locale)
+        ? (locale as Locale)
+        : defaultLocale;
+    const dictionary = await getDictionary(safeLocale);
 
     return (
         <main>
@@ -54,7 +58,7 @@ export default async function Home({
                 title={dictionary.home.finalInvitation.title}
                 subtitle={dictionary.home.finalInvitation.subtitle}
                 cta={dictionary.home.finalInvitation.cta}
-                locale={locale}
+                locale={safeLocale}
             />        </main>
     );
 }

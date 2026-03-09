@@ -12,7 +12,7 @@ type Params = Promise<{
 const baseUrl = "https://www.alboranvilla.com";
 
 function isValidLocale(locale: string): locale is Locale {
-    return locales.includes(locale as any);
+    return locales.includes(locale as Locale);
 }
 
 async function findPost(locale: Locale, slug: string) {

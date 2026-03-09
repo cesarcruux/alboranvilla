@@ -11,7 +11,7 @@ type Params = Promise<{
 const baseUrl = "https://www.alboranvilla.com";
 
 function isValidLocale(locale: string): locale is Locale {
-    return locales.includes(locale as any);
+    return locales.includes(locale as Locale);
 }
 
 export async function generateMetadata({

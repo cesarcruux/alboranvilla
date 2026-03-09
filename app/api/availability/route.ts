@@ -2,8 +2,7 @@ export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
 
-const BOOKING_ICAL_URL =
-    "https://ical.booking.com/v1/export?t=a7fbc13f-6068-461f-82b9-77d0bbaf8a17";
+const BOOKING_ICAL_URL = process.env.BOOKING_ICAL_URL;
 
 // -----------------------------
 // Utils
@@ -94,6 +93,13 @@ function parseICS(icsText: string) {
 
 export async function GET() {
     try {
+        if (!BOOKING_ICAL_URL) {
+            console.error("BOOKING_ICAL_URL is not configured");
+            return NextResponse.json({
+                occupiedNights: [],
+            });
+        }
+
         const icsText = await fetchICS(BOOKING_ICAL_URL);
 
         const data = parseICS(icsText);

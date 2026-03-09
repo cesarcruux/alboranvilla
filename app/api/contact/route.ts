@@ -1,5 +1,17 @@
+export const runtime = "nodejs";
+
 import nodemailer from "nodemailer";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX_REQUESTS = 5;
+
+type RateLimitBucket = {
+  count: number;
+  resetAt: number;
+};
+
+const rateLimitStore = new Map<string, RateLimitBucket>();
 
 /**
  * Generates a readable timestamp for internal reference.
@@ -15,14 +27,72 @@ function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-export async function POST(request: Request) {
+function escapeHtml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function getClientIp(request: NextRequest) {
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (forwarded) {
+    return forwarded.split(",")[0]?.trim() || "unknown";
+  }
+
+  const realIp = request.headers.get("x-real-ip");
+  if (realIp) {
+    return realIp.trim();
+  }
+
+  return "unknown";
+}
+
+function isRateLimited(ip: string) {
+  const now = Date.now();
+  const existing = rateLimitStore.get(ip);
+
+  if (!existing || now > existing.resetAt) {
+    rateLimitStore.set(ip, {
+      count: 1,
+      resetAt: now + RATE_LIMIT_WINDOW_MS,
+    });
+    return false;
+  }
+
+  if (existing.count >= RATE_LIMIT_MAX_REQUESTS) {
+    return true;
+  }
+
+  existing.count += 1;
+  rateLimitStore.set(ip, existing);
+  return false;
+}
+
+export async function POST(request: NextRequest) {
   try {
+    const clientIp = getClientIp(request);
+    if (isRateLimited(clientIp)) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
 
     const name = body.name?.trim();
     const email = body.email?.trim();
     const dates = body.dates?.trim();
     const message = body.message?.trim();
+    const website = body.website?.trim() ?? "";
+
+    // Honeypot: bots often fill hidden fields.
+    if (website) {
+      return NextResponse.json({ success: true });
+    }
 
     // -----------------------------
     // Validation
@@ -41,10 +111,36 @@ export async function POST(request: Request) {
       );
     }
 
-    if (name.length > 120 || message.length > 5000) {
+    if (
+      name.length > 120 ||
+      email.length > 254 ||
+      dates.length > 200 ||
+      message.length > 5000
+    ) {
       return NextResponse.json(
         { error: "Input too long" },
         { status: 400 }
+      );
+    }
+
+    const smtpHost = process.env.SMTP_HOST;
+    const smtpUser = process.env.SMTP_USER;
+    const smtpPass = process.env.SMTP_PASS;
+
+    if (!smtpHost || !smtpUser || !smtpPass) {
+      console.error("Missing SMTP configuration");
+      return NextResponse.json(
+        { error: "Service unavailable" },
+        { status: 503 }
+      );
+    }
+
+    const smtpPort = Number(process.env.SMTP_PORT ?? 587);
+    if (!Number.isInteger(smtpPort) || smtpPort <= 0) {
+      console.error("Invalid SMTP port configuration");
+      return NextResponse.json(
+        { error: "Service unavailable" },
+        { status: 503 }
       );
     }
 
@@ -52,24 +148,30 @@ export async function POST(request: Request) {
     // SMTP Transport
     // -----------------------------
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: 587,
+      host: smtpHost,
+      port: smtpPort,
       secure: false,
       auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+        user: smtpUser,
+        pass: smtpPass,
       },
     });
+
+    const safeName = escapeHtml(name);
+    const safeEmail = escapeHtml(email);
+    const safeDates = escapeHtml(dates);
+    const safeMessage = escapeHtml(message);
+    const safeSubjectName = name.replace(/[\r\n]+/g, " ").trim();
 
     // =============================
     // 1️⃣ INTERNAL EMAIL (ALBORÁN)
     // =============================
 
     await transporter.sendMail({
-      from: `"Alborán Villa" <${process.env.SMTP_USER}>`,
-      to: process.env.SMTP_USER,
+      from: `"Alborán Villa" <${smtpUser}>`,
+      to: smtpUser,
       replyTo: email,
-      subject: `Alborán Villa — New Enquiry from ${name}`,
+      subject: `Alborán Villa — New Enquiry from ${safeSubjectName}`,
 
       text: `
 ALBORÁN VILLA — NEW ENQUIRY
@@ -126,19 +228,19 @@ ${getTimestamp()}
     <div style="margin-bottom: 25px;">
       <p style="margin: 0 0 10px 0;">
         <strong>Name</strong><br>
-        ${name}
+        ${safeName}
       </p>
 
       <p style="margin: 0;">
         <strong>Email</strong><br>
-        ${email}
+        ${safeEmail}
       </p>
     </div>
 
     <div style="margin-bottom: 25px;">
       <p style="margin: 0;">
         <strong>Stay</strong><br>
-        ${dates}
+        ${safeDates}
       </p>
     </div>
 
@@ -152,7 +254,7 @@ ${getTimestamp()}
         color: #444;
         white-space: pre-line;
       ">
-        ${message}
+        ${safeMessage}
       </p>
     </div>
 
@@ -172,7 +274,7 @@ ${getTimestamp()}
     // =============================
 
     await transporter.sendMail({
-      from: `"Alborán Villa" <${process.env.SMTP_USER}>`,
+      from: `"Alborán Villa" <${smtpUser}>`,
       to: email,
       subject: "Alborán Villa — We have received your enquiry",
 

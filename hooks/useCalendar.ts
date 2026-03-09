@@ -43,8 +43,7 @@ export function useCalendar() {
     }
 
     function handleDayClick(
-        date: Date,
-        today: Date
+        date: Date
     ) {
 
         const key = formatKey(date);

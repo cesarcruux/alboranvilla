@@ -1,16 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 export default function WhatsAppButton() {
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    if (!mounted) return null;
-
     const phoneNumber = "6281215614589";
     const message = encodeURIComponent(
         "Alboran Villa, en que podemos ayudarle?"

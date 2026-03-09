@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { locales } from "@/lib/i18n/config";
+import { locales, type Locale } from "@/lib/i18n/config";
 
-const localeFlags: Record<string, string> = {
+const localeFlags: Record<Locale, string> = {
     en: "🇬🇧",
     es: "🇪🇸",
     fr: "🇫🇷",
@@ -16,24 +16,28 @@ const localeFlags: Record<string, string> = {
     id: "🇮🇩",
 };
 
+function isLocale(value: string | undefined): value is Locale {
+    return Boolean(value) && locales.includes(value as Locale);
+}
+
 export default function HeaderMinimal() {
     const pathname = usePathname();
     const [menuOpen, setMenuOpen] = useState(false);
     const [langOpen, setLangOpen] = useState(false);
 
     const segments = pathname.split("/").filter(Boolean);
+    const localeSegment = segments[0];
 
-    const currentLocale =
-        segments.length > 0 && locales.includes(segments[0] as any)
-            ? segments[0]
-            : "en";
+    const currentLocale: Locale = isLocale(localeSegment)
+        ? localeSegment
+        : "en";
 
     const restSegments =
-        segments.length > 0 && locales.includes(segments[0] as any)
+        isLocale(localeSegment)
             ? segments.slice(1)
             : segments;
 
-    const buildPath = (newLocale: string) => {
+    const buildPath = (newLocale: Locale) => {
         const rest = restSegments.join("/");
         return rest ? `/${newLocale}/${rest}` : `/${newLocale}`;
     };

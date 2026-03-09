@@ -50,16 +50,21 @@ export default function ContactForm({ messages }: ContactFormProps) {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
-        dates: "",
         message: "",
+        website: "",
     });
 
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState<"success" | "error" | null>(null);
-    const [errors, setErrors] = useState<{ name?: string; email?: string; message?: string }>({});
+    const [errors, setErrors] = useState<{ name?: string; email?: string; dates?: string; message?: string }>({});
     const [showCalendar, setShowCalendar] = useState(false);
     const datesRef = useRef<HTMLDivElement | null>(null);
     const calendarRef = useRef<HTMLDivElement | null>(null);
+
+    const selectedDates =
+        checkIn && checkOut
+            ? `${checkIn.toLocaleDateString()} – ${checkOut.toLocaleDateString()}`
+            : "";
 
     useEffect(() => {
         if (checkOut && datesRef.current) {
@@ -80,38 +85,22 @@ export default function ContactForm({ messages }: ContactFormProps) {
     }, [showCalendar]);
 
     // ---------------------------
-    // SYNC DATES → FORM
-    // ---------------------------
-
-    useEffect(() => {
-
-        // When range is complete → close calendar + fill input
-        if (checkIn && checkOut) {
-
-            const formatted =
-                `${checkIn.toLocaleDateString()} – ${checkOut.toLocaleDateString()}`;
-
-            setFormData(prev => ({
-                ...prev,
-                dates: formatted
-            }));
-
-            setShowCalendar(false);
-        }
-
-        // When cleared → empty input
-        if (!checkIn && !checkOut) {
-            setFormData(prev => ({
-                ...prev,
-                dates: ""
-            }));
-        }
-
-    }, [checkIn, checkOut]);
-
-    // ---------------------------
     // FORM HANDLERS
     // ---------------------------
+
+    const handleCalendarDayClick = (date: Date) => {
+        const selectingCheckOut =
+            checkIn &&
+            !checkOut &&
+            date > checkIn &&
+            rangeIsFree(checkIn, date);
+
+        handleDayClick(date);
+
+        if (selectingCheckOut) {
+            setShowCalendar(false);
+        }
+    };
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -137,6 +126,10 @@ export default function ContactForm({ messages }: ContactFormProps) {
             newErrors.email = messages.errors.invalidEmail;
         }
 
+        if (!selectedDates) {
+            newErrors.dates = messages.errors.required;
+        }
+
         if (!formData.message.trim()) {
             newErrors.message = messages.errors.required;
         }
@@ -148,12 +141,16 @@ export default function ContactForm({ messages }: ContactFormProps) {
 
         setErrors({});
         setLoading(true);
+        setStatus(null);
 
         try {
             const res = await fetch("/api/contact", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({
+                    ...formData,
+                    dates: selectedDates,
+                }),
             });
 
             if (res.ok) {
@@ -162,8 +159,8 @@ export default function ContactForm({ messages }: ContactFormProps) {
                 setFormData({
                     name: "",
                     email: "",
-                    dates: "",
                     message: "",
+                    website: "",
                 });
 
                 setCheckIn(null);
@@ -179,13 +176,6 @@ export default function ContactForm({ messages }: ContactFormProps) {
 
         setLoading(false);
     };
-
-    // ---------------------------
-    // TODAY (para Calendar)
-    // ---------------------------
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
 
     // ---------------------------
     // RENDER
@@ -246,11 +236,17 @@ export default function ContactForm({ messages }: ContactFormProps) {
                     type="text"
                     readOnly
                     name="dates"
-                    value={formData.dates}
+                    value={selectedDates}
                     onClick={() => setShowCalendar(prev => !prev)}
                     placeholder="Select dates"
                     className="w-full border-b py-3 bg-transparent cursor-pointer"
                 />
+
+                {errors.dates && (
+                    <p className="text-gray-500 text-sm mt-2">
+                        {errors.dates}
+                    </p>
+                )}
             </div>
 
             {showCalendar && (
@@ -261,7 +257,7 @@ export default function ContactForm({ messages }: ContactFormProps) {
                         checkIn={checkIn}
                         checkOut={checkOut}
                         occupiedNights={occupiedNights}
-                        handleDayClick={handleDayClick}
+                        handleDayClick={handleCalendarDayClick}
                         rangeIsFree={rangeIsFree}
                     />
                 </div>
@@ -286,6 +282,17 @@ export default function ContactForm({ messages }: ContactFormProps) {
                     </p>
                 )}
             </div>
+
+            <input
+                type="text"
+                name="website"
+                value={formData.website}
+                onChange={handleChange}
+                autoComplete="off"
+                tabIndex={-1}
+                aria-hidden="true"
+                className="hidden"
+            />
 
             {/* BUTTON */}
             <button

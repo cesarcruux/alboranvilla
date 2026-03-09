@@ -6,7 +6,7 @@ type CalendarProps = {
     checkIn: Date | null;
     checkOut: Date | null;
     occupiedNights: string[];
-    handleDayClick: (date: Date, today: Date) => void;
+    handleDayClick: (date: Date) => void;
     rangeIsFree: (start: Date, end: Date) => boolean;
 };
 
@@ -139,7 +139,7 @@ export default function Calendar({
                                 key={day}
                                 onClick={() => {
                                     if (!clickable) return;
-                                    handleDayClick(date, today);
+                                    handleDayClick(date);
                                 }}
                                 className={`
                                     relative w-8 h-8 md:w-9 md:h-9 flex items-center justify-center

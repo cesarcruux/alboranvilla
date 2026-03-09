@@ -11,7 +11,7 @@ export async function getPosts(locale: Locale): Promise<JournalPost[]> {
     try {
         const posts = await import(`./content/${locale}`);
         return posts.default as JournalPost[];
-    } catch (error) {
+    } catch {
         console.error(`No journal content found for locale: ${locale}`);
         return [];
     }
